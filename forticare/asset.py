@@ -9,8 +9,67 @@ __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
 
 
-class Entitlement(object):
-    """FortiCare Entitlement object"""
+# {
+#     "licenseNumber": "FMCLD4713562246",
+#     "licenseSKU": "FMG-VM-CLOUD",
+#     "serialNumber": "FMGVCLTM20000051",
+#     "status": "Registered"
+# },
+class License(object):
+    """FortiCare License object"""
+
+    def __init__(self, json: dict):
+        self._license_number = json.get("licenseNumber", "")
+        self._license_sku = json.get("licenseSKU", "")
+        self._serial_number = json.get("serialNumber", "")
+        self._status = json.get("status", "")
+
+    @property
+    def license_number(self) -> str:
+        """Get license number"""
+        return self._license_number
+
+    @property
+    def license_sku(self) -> str:
+        """Get license SKU"""
+        return self._license_sku
+
+    @property
+    def serial_number(self) -> str:
+        """Get serial number"""
+        return self._serial_number
+
+    @property
+    def status(self) -> str:
+        """Get status"""
+        return self._status
+
+    def to_json(self) -> dict:
+        """Get object as json"""
+        return {
+            "licenseNumber": self.license_number,
+            "licenseSKU": self.license_sku,
+            "serialNumber": self.serial_number,
+            "status": self.status,
+        }
+
+    def __str__(self) -> str:
+        return f"License: {self.license_sku} - {self.serial_number}"
+
+    def __repr__(self) -> str:
+        return self.__str__(self)
+
+    def __eq__(self, other) -> bool:
+        if self.serial_number == other.serial_number:
+            return True
+        return False
+
+    def __hash__(self) -> int:
+        return hash(self.serial_number)
+
+
+class Service(object):
+    """FortiCare Entitlement or Warranty object"""
 
     def __init__(self, json: dict):
         self._start_date = datetime.strptime(str(json.get("startDate")), "%Y-%m-%dT%H:%M:%S")
@@ -22,33 +81,44 @@ class Entitlement(object):
 
     @property
     def start_date(self) -> datetime:
-        """Get entitlement start date"""
+        """Get service start date"""
         return self._start_date
 
     @property
     def end_date(self) -> datetime:
-        """Get entitlement end date"""
+        """Get service end date"""
         return self._end_date
 
     @property
     def level(self) -> int:
-        """Get entitlement level"""
+        """Get service level"""
         return self._level
 
     @property
     def level_desc(self) -> str:
-        """Get entitlement level description"""
+        """Get service level description"""
         return self._level_desc
 
     @property
     def type(self) -> int:
-        """Get entitlement type"""
+        """Get service type"""
         return self._type
 
     @property
     def type_desc(self) -> str:
-        """Get entitlement type description"""
+        """Get service type description"""
         return self._type_desc
+
+    def to_json(self) -> dict:
+        """Get object as json"""
+        return {
+            "startDate": self.start_date,
+            "endDate": self.end_date,
+            "level": self.level,
+            "levelDesc": self.level_desc,
+            "type": self.type,
+            "typeDesc": self.type_desc,
+        }
 
     def __str__(self) -> str:
         return f"Entitlement: {self.type_desc}"
@@ -71,14 +141,22 @@ class Asset(object):
             self._registration_date = datetime.strptime(str(json.get("registrationDate")), "%Y-%m-%dT%H:%M:%S")
         self._serial_number = json.get("serialNumber", "")
         self._entitlements = []
-        for entitlement in json.get("entitlements"):
-            self._entitlements.append(Entitlement(entitlement))
-        self._warranty_supports = json.get("warrantySupports", "")
-        self._asset_groups = json.get("assetGroups", "")
+        for entitlement in json.get("entitlements", []):
+            self._entitlements.append(Service(entitlement))
+        __warranty_supports = json.get("warrantySupports", [])
+        self._warranty_supports = []
+        if __warranty_supports:
+            for warranty_support in __warranty_supports:
+                self._warranty_supports.append(Service(warranty_support))
+        self._asset_groups = json.get("assetGroups", [])
         self._contracts = json.get("contracts", "")
         self._product_model_eor = json.get("productModelEoR", "")
         self._product_model_eos = json.get("productModelEoS", "")
-        self._license = json.get("license", "")
+        __licenses = json.get("licenses", [])
+        self._licenses = []
+        if __licenses:
+            for license in __licenses:
+                self._licenses.append(License(license))
         self._location = json.get("location", "")
         self._partner = json.get("partner", "")
         self._folder_id = json.get("folderId", "")
@@ -110,12 +188,12 @@ class Asset(object):
         return self._serial_number
 
     @property
-    def entitlements(self) -> list[Entitlement]:
+    def entitlements(self) -> list[Service]:
         """Get asset entitlements"""
         return self._entitlements
 
     @property
-    def warranty_supports(self) -> str:
+    def warranty_supports(self) -> list[Service]:
         """Get asset warranty supports"""
         return self._warranty_supports
 
@@ -140,9 +218,9 @@ class Asset(object):
         return self._product_model_eos
 
     @property
-    def license(self) -> str:
+    def licenses(self) -> list[License]:
         """Get asset license"""
-        return self._license
+        return self._licenses
 
     @property
     def location(self) -> str:
@@ -164,8 +242,32 @@ class Asset(object):
         """Get asset folder path"""
         return self._folder_path
 
+    def to_json(self) -> dict:
+        """Get object as json"""
+        return {
+            "assetGroups": self.asset_groups,
+            "contracts": self.contracts,
+            "description": self.description,
+            "entitlements": [entitlement.to_json() for entitlement in self.entitlements],
+            "folderId": self.folder_id,
+            "folderPath": self.folder_path,
+            "isDecommissioned": self.is_decommissioned,
+            "licenses": [license.to_json() for license in self.licenses],
+            "location": self.location,
+            "partner": self.partner,
+            "productModel": self.product_model,
+            "productModelEoR": self.product_model_eor,
+            "productModelEoS": self.product_model_eos,
+            "registrationDate": self.registration_date,
+            "serialNumber": self.serial_number,
+            "warrantySupports": [warranty_support.to_json() for warranty_support in self.warranty_supports],
+        }
+
     def __str__(self) -> str:
         return f"Asset: {self.product_model} - {self.serial_number}"
+
+    def __repr__(self) -> str:
+        return f"Asset({self.serial_number}, {self.product_model})"
 
     def __eq__(self, other) -> bool:
         if self.serial_number == other.serial_number:

@@ -3,11 +3,13 @@
 """_product.py: ."""
 
 from ._helpers import *
-import uuid
 import logging
+import json
 from datetime import datetime
 
-from .asset import Asset, Entitlement
+from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit
+from .asset import Asset, Service
+from .location import Location
 
 __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
@@ -15,7 +17,7 @@ __copyright__ = "Copyright 2023"
 LOG = logging.getLogger()
 
 
-def get_product_licenses(
+def get_products(
     self, expire_before: datetime, serial_number: str = "", product_model: str = "", status: str = "Registered"
 ) -> list[Asset]:
     """
@@ -49,7 +51,9 @@ def get_product_licenses(
         LOG.error(">>> Failed to retrive assets: %s", str(exp.args))
         raise exp
 
-    return [Asset(asset) for asset in results["assets"]]
+    if "assets" in results:
+        return [Asset(asset) for asset in results["assets"]]
+    return []
 
 
 def get_product_details(self, serial_number: str) -> Asset:
@@ -70,4 +74,137 @@ def get_product_details(self, serial_number: str) -> Asset:
         LOG.error(">>> Failed to retrive asset details: %s", str(exp.args))
         raise exp
 
-    return Asset(results)
+    return Asset(results["assetDetails"])
+
+
+# {
+#   "registrationUnits": [
+#     {
+#       "serialNumber": "FGT90D1234567890",
+#       "contractNumber": "2121DJ8902",
+#       "description": "Backup device",
+#       "isGovernment": false,
+#       "assetGroupIds": [],
+#       "replacedSerialNumber": "FGT90D9876543210",
+#       "additionalInfo": "",
+#       "cloudKey": "80X4LSN3",
+#       "location": {
+#         // "ref": "#/locations/0"
+#       }
+#     }
+#   ],
+#   "locations": [
+#     {
+#       "company": "FortiTEST",
+#       "address": "1234 Wall Street",
+#       "city": "Sunnyvale",
+#       "stateOrProvince": "CA",
+#       "countryCode": "US",
+#       "postalCode": "34510",
+#       "email": "test@fortitest.com",
+#       "phone": "3151231234",
+#       "fax": "3151231235"
+#     }
+#   ]
+# }
+#
+# Response:
+# {
+#   "token": "<string>",
+#   "version": "<string>",
+#   "status": "<integer>",
+#   "message": "<string>",
+#   "build": "<string>",
+#   "error": "<string>",
+#   "assets": [
+#     {
+#       "serialNumber": "<string>",
+#       "folderId": "<number>",
+#       "folderPath": "<string>",
+#       "registrationDate": "<dateTime>",
+#       "description": "<string>",
+#       "isDecommissioned": "<boolean>",
+#       "status": "<string>",
+#       "productModel": "<string>",
+#       "productModelEoR": "<string>",
+#       "productModelEoS": "<string>",
+#       "entitlements": [
+#         {
+#           "level": "<integer>",
+#           "levelDesc": "<string>",
+#           "type": "<integer>",
+#           "typeDesc": "<string>",
+#           "startDate": "<string>",
+#           "endDate": "<string>"
+#         },
+#         {
+#           "level": "<integer>",
+#           "levelDesc": "<string>",
+#           "type": "<integer>",
+#           "typeDesc": "<string>",
+#           "startDate": "<string>",
+#           "endDate": "<string>"
+#         }
+#       ],
+#       "assetGroups": [
+#         {
+#           "assetGroupId": "<integer>",
+#           "assetGroup": "<string>"
+#         },
+#         {
+#           "assetGroupId": "<integer>",
+#           "assetGroup": "<string>"
+#         }
+#       ],
+#       "warrantySupports": [
+#         {
+#           "level": "<integer>",
+#           "levelDesc": "<string>",
+#           "type": "<integer>",
+#           "typeDesc": "<string>",
+#           "startDate": "<string>",
+#           "endDate": "<string>"
+#         },
+#         {
+#           "level": "<integer>",
+#           "levelDesc": "<string>",
+#           "type": "<integer>",
+#           "typeDesc": "<string>",
+#           "startDate": "<string>",
+#           "endDate": "<string>"
+#         }
+#       ],
+#       "trialTypes": "<string>"
+#     },
+#     ...
+#   ]
+# }
+def register_product(self, units: list[ProductRegistrationUnit], locations: list) -> list[Asset]:
+    """
+    Register products.
+    :param units: Registration units
+    :type units: list[ProductRegistrationUnit]
+    :param locations: Locations
+    :type locations: list[Pair[serial_number: <string>, location: <Location>]]
+    :return Asset: Return a list of register assets
+    """
+    endpoint = "/products/register"
+    _units_list = [ProductRegistrationUnit.to_json(unit) for unit in units]
+    for unit in _units_list:
+        for index, location in locations:
+            if unit["serialNumber"] == location[0]:
+                unit["location"] = {"ref": "#/locations/" + str(index)}
+    body = {
+        "registrationUnits": _units_list,
+        "locations": [location[1].to_json() for location in locations],
+    }
+
+    LOG.info("> Registering new product...")
+    results = None
+    try:
+        results = self._post(endpoint, body)
+    except Exception as exp:
+        LOG.error(">>> Failed to register product: %s", str(exp.args))
+        raise exp
+
+    return [Asset(asset) for asset in results["assets"]]

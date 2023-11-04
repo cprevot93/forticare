@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import json
 import logging
-import requests
 import os
 import platform
+import requests
 from ._constants import *
 from logging.handlers import RotatingFileHandler
 
@@ -67,6 +68,37 @@ def init_logging(logger, log_level_console=logging.INFO):
 #     "pageNumber": 0,
 #     "totalPages": 0
 # }
+
+# Example 2:
+# HTTP 400 Bad Request
+# {
+#     "build": "1.0.0",
+#     "error": {
+#         "errorCode": 301,
+#         "message": "The license download function for given product category is not supported."
+#     },
+#     "message": "The license download function for given product category is not supported.",
+#     "status": -2,
+#     "token": "rZn5irgDwNxDK6snDol3ZYsptn0kAF",
+#     "version": "3.0",
+#     "licenseFile": "",
+#     "serialNumber": "FSACLPTM21000303"
+# }
+
+
+# Example 3: Not logged in
+# {
+#     "build": "1.0.0",
+#     "error": {
+#         "errorCode": 201,
+#         "message": "Invalid security token."
+#     },
+#     "message": "Invalid incoming request.",
+#     "status": -1,
+#     "token": "rZn5irgDwNxDK6snDol3ZYsptn0kAF",
+#     "version": "3.0",
+#     "assetDetails": null
+# }
 def _post(self, endpoint: str, body: dict = {}) -> dict:
     url = FORTICARE_URL + endpoint
 
@@ -80,26 +112,29 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
     j_data = results.json()
     if results.ok:
         return j_data
-    # need to refresh token
-    if (
-        (results.status_code == 400 or results.status_code == 401)
+    # refresh token
+    elif (
+        (results.status_code == 400 or results.status_code == 401 or results.status_code == 403)
         and j_data
-        and "message" in j_data
-        and j_data["message"] == "Invalid security token."
+        and "error" in j_data
+        and "message" in j_data["error"]
+        and j_data["error"]["message"] == "Invalid security token."
     ):
         if self._auto_login:
             if self.login():
                 return self._post(endpoint, body)
         else:
-            raise requests.exceptions.HTTPError(results.status_code, j_data["message"])
+            raise requests.exceptions.HTTPError(results.status_code, j_data["error"]["message"])
     else:
-        LOG.error(
+        LOG.debug(
             ">>> Error:\nREQUEST:\n%s\n%s\nRESPONSE:\n%s\n",
             str(results.request.headers),
             str(results.request.body),
             str(results.content),
         )
-        if j_data and "message" in j_data:
+        if j_data and "error" in j_data and "message" in j_data["error"]:
+            raise requests.exceptions.HTTPError(results.status_code, j_data["error"]["message"])
+        elif j_data and "message" in j_data:
             raise requests.exceptions.HTTPError(results.status_code, j_data["message"])
         else:
             results.raise_for_status()  # unknown error. Raise an exception

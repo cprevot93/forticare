@@ -39,7 +39,7 @@ def login(self, api_user: str = "", api_key: str = "") -> bool:
     body = {
         "username": str(api_user),
         "password": str(api_key),
-        "client_id": "flexvm",
+        "client_id": "assetmanagement",
         "grant_type": "password",
     }
     LOG.info("> Retrieving API Token on FortiCare")
@@ -64,56 +64,3 @@ def login(self, api_user: str = "", api_key: str = "") -> bool:
         return False
 
     return True
-
-
-def get_entitlements_list(self, program_sn: str, config_id: int = 0, account_id: int = 0) -> list[Entitlement]:
-    """
-    Get list of existing entitlements for a Configuration.
-    Configuration ID and Account ID are mutually exclusive i-e at least one of them must be provided.
-    :param program_sn: Program Serial Number
-    :type program_sn: str
-    :param config_ID: entitlement configuration ID
-    :type config_ID: int
-    :param account_id: Account ID
-    :type account_id: int
-    :return list: return a list of entitlements
-    {
-        "entitlements": [
-            {
-                "configId": 144,
-                "description": "Lab home",
-                "endDate": "2023-03-31T00:00:00",
-                "serialNumber": "FGVMELTM21000XXX",
-                "startDate": "2021-12-21T10:41:26.153",
-                "status": "EXPIRED",
-                "token": "9BE4322EB1524F769FC7",
-                "tokenStatus": "USED",
-                "accountId": 899695
-            },
-            ...
-        ],
-        "error": null,
-        "message": "Request processed successfully.",
-        "status": 0
-    }
-    """
-    results = None
-    endpoint = "/entitlements/list"
-    if config_id == 0 and account_id == 0:
-        LOG.error(">>> Account ID or Configuration ID must be provided")
-        raise ValueError("Account ID or Configuration ID must be provided")
-    body: dict[str, Union[str, int]] = {
-        "programSerialNumber": str(program_sn),
-    }
-    if config_id != 0:
-        body["configId"] = int(config_id)
-    if account_id != 0:
-        body["accountId"] = int(account_id)
-    LOG.info("> Fetching entitlements list with accountID %d and configID %d...", account_id, config_id)
-    try:
-        results = self._post(endpoint, body)
-    except Exception as exp:
-        LOG.error(">>> Failed to get entitlements list: %s", exp.args[1])
-        raise exp
-
-    return [Entitlement(entitlement) for entitlement in results["entitlements"]]

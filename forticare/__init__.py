@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from .asset import Asset, Service
+
 
 class FortiCare(object):
     def __init__(self, api_user=None, api_key=None, auto_login=False, timeout=20):
@@ -11,6 +13,9 @@ class FortiCare(object):
 
     from ._helpers import _post
     from ._core import login
+    from ._license import register_licenses, download_licenses
+    from ._product import get_products, get_product_details
+    from ._service import register_services
 
     @property
     def token(self):
