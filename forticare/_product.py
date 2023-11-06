@@ -7,7 +7,7 @@ import logging
 import json
 from datetime import datetime
 
-from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit
+from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit, ServiceRegistrationUnit
 from .asset import Asset, Service
 from .location import Location
 

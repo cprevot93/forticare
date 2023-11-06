@@ -7,12 +7,49 @@ import uuid
 import logging
 from datetime import datetime
 
-from .asset import Asset, Service
+from .asset import Asset, Service, License
+from .registration_unit import LicenseRegistrationUnit
 
 __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
 
 LOG = logging.getLogger()
+
+
+# {
+#   "status": "Registered"
+#   "licenseNumber": "FMCLD4713562246",
+#   "licenseSKU": "FMG-VM-CLOUD",
+# }
+def get_licenses(self, status: str = "", license_number: str = "", license_sku: str = "") -> list[License]:
+    """
+    Get license information.
+    :param serial_number: Serial number
+    :type serial_number: str
+    :param license_number: License number
+    :type license_number: str
+    :param license_sku: License SKU
+    :type license_sku: str
+    :return list: Return a list of assets
+    """
+    endpoint = "/licenses/list"
+    body = {}
+    if status != "":
+        body["status"] = str(status)
+    if license_number != "":
+        body["licenseNumber"] = str(license_number)
+    if license_sku != "":
+        body["licenseSKU"] = str(license_sku)
+
+    LOG.info("> Getting license information...")
+    results = None
+    try:
+        results = self._post(endpoint, body)
+    except Exception as exp:
+        LOG.error(">>> Failed to get license information: %s", str(exp.args))
+        raise exp
+
+    return [License(_l) for _l in results["licenses"]]
 
 
 # Request body example:
@@ -22,9 +59,7 @@ LOG = logging.getLogger()
 #   "additionalInfo": "",
 #   "isGovernment": false
 # }
-def register_licenses(
-    self, registration_code: str, description: str = "", additional_info: str = "", is_government: bool = False
-) -> list[Asset]:
+def register_licenses(self, license: LicenseRegistrationUnit) -> Asset:
     """
     Register a subscription contract (e.g. VM-S) to generate serial number.
     :param registration_code: Registration code
@@ -38,14 +73,7 @@ def register_licenses(
     :return list: Return a list of assets
     """
     endpoint = "/licenses/register"
-    body = {
-        "licenseRegistrationCode": str(registration_code),
-        "isGovernment": is_government,
-    }
-    if description != "":
-        body["description"] = str(description)
-    if additional_info != "":
-        body["additionalInfo"] = str(additional_info)
+    body = license.to_json()
 
     LOG.info("> Registering new service...")
     results = None
@@ -55,7 +83,7 @@ def register_licenses(
         LOG.error(">>> Failed to register service: %s", str(exp.args))
         raise exp
 
-    return [Asset(asset) for asset in results["assets"]]
+    return Asset(results["assetDetails"])
 
 
 def download_licenses(self, serial_number: str) -> str:

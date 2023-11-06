@@ -22,7 +22,7 @@ class Location(object):
 
     def __init__(
         self,
-        address: str,
+        address: str = "",
         postal_code: str = "",
         country_code: str = "",
         city: str = "",

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from .asset import Asset, Service
+from .asset import Asset, Service, License
+from .location import Location
+from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit, ServiceRegistrationUnit
 
 
 class FortiCare(object):
@@ -13,8 +15,8 @@ class FortiCare(object):
 
     from ._helpers import _post
     from ._core import login
-    from ._license import register_licenses, download_licenses
-    from ._product import get_products, get_product_details
+    from ._license import get_licenses, register_licenses, download_licenses
+    from ._product import get_products, get_product_details, register_product
     from ._service import register_services
 
     @property

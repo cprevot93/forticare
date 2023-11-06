@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 
 from .asset import Asset, Service
+from .registration_unit import ServiceRegistrationUnit
 
 __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
@@ -22,30 +23,15 @@ LOG = logging.getLogger()
 #   "additionalInfo": "",
 #   "isGovernment": false
 # }
-def register_services(
-    self, registration_code: str, description: str = "", additional_info: str = "", is_government: bool = False
-) -> Asset:
+def register_services(self, service: ServiceRegistrationUnit) -> Asset:
     """
     Register a subscription contract (e.g. VM-S) to generate serial number.
-    :param registration_code: Registration code
-    :type registration_code: str
-    :param description: Description
-    :type description: str
-    :param additional_info: Additional information
-    :type additional_info: str
-    :param is_government: Is government
-    :type is_government: bool
-    :return list: Return a list of assets
+    :param service: Service registration unit
+    :type service: ServiceRegistrationUnit
+    :return Asset: An assets
     """
     endpoint = "/services/register"
-    body = {
-        "contractNumber": str(registration_code),
-        "isGovernment": is_government,
-    }
-    if description != "":
-        body["description"] = str(description)
-    if additional_info != "":
-        body["additionalInfo"] = str(additional_info)
+    body = service.to_json()
 
     LOG.info("> Registering new service...")
     results = None

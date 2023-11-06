@@ -150,7 +150,7 @@ class LicenseRegistrationUnit(RegistrationUnit):
         body = super().to_json()
         if self.license_registration_code != "":
             body["licenseRegistrationCode"] = str(self.license_registration_code)
-        return body
+        return dict(sorted(body.items()))
 
     def from_json(self, json: dict):
         """Populate from JSON object"""
@@ -172,9 +172,9 @@ class ProductRegistrationUnit(RegistrationUnit):
     Product registration units object
     """
 
-    def __init__(self, json: dict):
-        super().__init__(json)
-        self._contract_number = json.get("contractNumber", "")
+    def __init__(self, contract_number: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._contract_number = contract_number
 
     @property
     def contract_number(self) -> str:
@@ -186,7 +186,7 @@ class ProductRegistrationUnit(RegistrationUnit):
         body = super().to_json()
         if self.contract_number != "":
             body["contractNumber"] = str(self.contract_number)
-        return body
+        return dict(sorted(body.items()))
 
     def from_json(self, json: dict):
         """Populate from JSON object"""
@@ -201,3 +201,72 @@ class ProductRegistrationUnit(RegistrationUnit):
 
     def __hash__(self) -> int:
         return hash(self._contract_number)
+
+
+class ServiceRegistrationUnit(object):
+    """FortiCare Registration Units Service object"""
+
+    def __init__(
+        self,
+        contract_number: str,
+        description: str = "",
+        is_government: bool = False,
+        additional_info: str = "",
+    ):
+        self._contract_number = contract_number
+        self._description = description
+        self._is_government = is_government
+        self._additional_info = additional_info
+
+        if self._contract_number == "":
+            raise ValueError("Contract number is empty")
+
+    @property
+    def contract_number(self) -> str:
+        """Contract number"""
+        return self._contract_number
+
+    @property
+    def description(self) -> str:
+        """Description"""
+        return self._description
+
+    @property
+    def is_government(self) -> bool:
+        """Is government"""
+        return self._is_government
+
+    @property
+    def additional_info(self) -> str:
+        """Additional information"""
+        return self._additional_info
+
+    def to_json(self) -> dict:
+        """Return JSON object"""
+        body = {
+            "description": self.description,
+            "contractNumber": self.contract_number,
+            "isGovernment": self.is_government,
+        }
+        if self.additional_info != "":
+            body["additionalInfo"] = str(self.additional_info)
+        return dict(sorted(body.items()))
+
+    def from_json(self, json: dict):
+        """Populate from JSON object"""
+        self._contract_number = json.get("contractNumber", "")
+        self._description = json.get("description", "")
+        self._is_government = json.get("isGovernment", False)
+        self._additional_info = json.get("additionalInfo", "")
+
+    def __str__(self) -> str:
+        return f"ServiceRegistrationUnits(contract={self._contract_number})"
+
+    def __eq__(self, other) -> bool:
+        return self._contract_number == other._contrat_number
+
+    def __hash__(self) -> int:
+        return hash(self._contract_number)
+
+    def __repr__(self) -> str:
+        return self.__str__()

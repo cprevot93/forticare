@@ -54,10 +54,10 @@ class License(object):
         }
 
     def __str__(self) -> str:
-        return f"License: {self.license_sku} - {self.serial_number}"
+        return f"License: {self.license_sku} - {self.license_number}"
 
     def __repr__(self) -> str:
-        return self.__str__(self)
+        return self.__str__()
 
     def __eq__(self, other) -> bool:
         if self.serial_number == other.serial_number:
@@ -161,6 +161,7 @@ class Asset(object):
         self._partner = json.get("partner", "")
         self._folder_id = json.get("folderId", "")
         self._folder_path = json.get("folderPath", "")
+        self._status = json.get("status", "")
 
     @property
     def description(self) -> str:
@@ -242,6 +243,11 @@ class Asset(object):
         """Get asset folder path"""
         return self._folder_path
 
+    @property
+    def status(self) -> str:
+        """Get asset status"""
+        return self._status
+
     def to_json(self) -> dict:
         """Get object as json"""
         return {
@@ -261,6 +267,7 @@ class Asset(object):
             "registrationDate": self.registration_date,
             "serialNumber": self.serial_number,
             "warrantySupports": [warranty_support.to_json() for warranty_support in self.warranty_supports],
+            "status": self.status,
         }
 
     def __str__(self) -> str:
