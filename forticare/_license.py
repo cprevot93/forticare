@@ -24,8 +24,8 @@ LOG = logging.getLogger()
 def get_licenses(self, status: str = "", license_number: str = "", license_sku: str = "") -> list[License]:
     """
     Get license information.
-    :param serial_number: Serial number
-    :type serial_number: str
+    :param status: License status. Registered, Pending, Expired, or Decommissioned
+    :type status: str
     :param license_number: License number
     :type license_number: str
     :param license_sku: License SKU
@@ -62,15 +62,9 @@ def get_licenses(self, status: str = "", license_number: str = "", license_sku: 
 def register_licenses(self, license: LicenseRegistrationUnit) -> Asset:
     """
     Register a subscription contract (e.g. VM-S) to generate serial number.
-    :param registration_code: Registration code
-    :type registration_code: str
-    :param description: Description
-    :type description: str
-    :param additional_info: Additional information
-    :type additional_info: str
-    :param is_government: Is government
-    :type is_government: bool
-    :return list: Return a list of assets
+    :param license: License registration unit
+    :type license: LicenseRegistrationUnit
+    :return Asset: Details for registered asset
     """
     endpoint = "/licenses/register"
     body = license.to_json()

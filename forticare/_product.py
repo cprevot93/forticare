@@ -61,7 +61,7 @@ def get_product_details(self, serial_number: str) -> Asset:
     Returns product details based on product SN.
     :param serial_number: Serial number or serial number search pattern
     :type serial_number: str
-    :return Asset: Return an asset
+    :return Asset: Return asset details
     """
     endpoint = "/products/details"
     body = {"serialNumber": str(serial_number)}
@@ -186,7 +186,7 @@ def register_product(self, units: list[ProductRegistrationUnit], locations: list
     :type units: list[ProductRegistrationUnit]
     :param locations: Locations
     :type locations: list[Pair[serial_number: <string>, location: <Location>]]
-    :return Asset: Return a list of register assets
+    :return list[Asset]: Return a list of register assets
     """
     endpoint = "/products/register"
     _units_list = [ProductRegistrationUnit.to_json(unit) for unit in units]
