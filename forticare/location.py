@@ -58,17 +58,17 @@ class Location(object):
         return self._city
 
     @property
-    def state_or_province(self) -> str:
+    def stateOrProvince(self) -> str:
         """State or province"""
         return self._state_or_province
 
     @property
-    def country_code(self) -> str:
+    def countryCode(self) -> str:
         """Country code"""
         return self._country_code
 
     @property
-    def postal_code(self) -> str:
+    def postalCode(self) -> str:
         """Postal code"""
         return self._postal_code
 
@@ -96,12 +96,12 @@ class Location(object):
             body["address"] = str(self.address)
         if self.city != "":
             body["city"] = str(self.city)
-        if self.state_or_province != "":
-            body["stateOrProvince"] = str(self.state_or_province)
-        if self.country_code != "":
-            body["countryCode"] = str(self.country_code)
-        if self.postal_code != "":
-            body["postalCode"] = str(self.postal_code)
+        if self.stateOrProvince != "":
+            body["stateOrProvince"] = str(self.stateOrProvince)
+        if self.countryCode != "":
+            body["countryCode"] = str(self.countryCode)
+        if self.postalCode != "":
+            body["postalCode"] = str(self.postalCode)
         if self.email != "":
             body["email"] = str(self.email)
         if self.phone != "":

@@ -49,7 +49,7 @@ class RegistrationUnit(object):
             raise Exception("Serial number is empty")
 
     @property
-    def serial_number(self) -> str:
+    def serialNumber(self) -> str:
         """Serial number"""
         return self._serial_number
 
@@ -59,32 +59,32 @@ class RegistrationUnit(object):
         return self._description
 
     @property
-    def is_government(self) -> bool:
+    def isGovernment(self) -> bool:
         """Is government"""
         return self._is_government
 
     @property
-    def additional_info(self) -> str:
+    def additionalInfo(self) -> str:
         """Additional information"""
         return self._additional_info
 
     @property
-    def folder_id(self) -> str:
+    def folderId(self) -> str:
         """Folder ID"""
         return self._folder_id
 
     @property
-    def asset_group_ids(self) -> str:
+    def assetGroupIds(self) -> str:
         """Asset group IDs"""
         return self._asset_group_ids
 
     @property
-    def replaced_serial_number(self) -> str:
+    def replacedSerialNumber(self) -> str:
         """Replaced serial number"""
         return self._replaced_serial_number
 
     @property
-    def cloud_key(self) -> str:
+    def cloudKey(self) -> str:
         """Cloud key"""
         return self._cloud_key
 
@@ -97,20 +97,20 @@ class RegistrationUnit(object):
         """Return JSON object"""
         body = {
             "description": self.description,
-            "isGovernment": self.is_government,
+            "isGovernment": self.isGovernment,
         }
-        if self.serial_number != "":
-            body["serialNumber"] = str(self.serial_number)
-        if self.additional_info != "":
-            body["additionalInfo"] = str(self.additional_info)
-        if self.folder_id != "":
-            body["folderId"] = str(self.folder_id)
-        if self.asset_group_ids != "":
-            body["assetGroupIds"] = str(self.asset_group_ids)
-        if self.replaced_serial_number != "":
-            body["replacedSerialNumber"] = str(self.replaced_serial_number)
-        if self.cloud_key != "":
-            body["cloudKey"] = str(self.cloud_key)
+        if self.serialNumber != "":
+            body["serialNumber"] = str(self.serialNumber)
+        if self.additionalInfo != "":
+            body["additionalInfo"] = str(self.additionalInfo)
+        if self.folderId != "":
+            body["folderId"] = str(self.folderId)
+        if self.assetGroupIds != "":
+            body["assetGroupIds"] = str(self.assetGroupIds)
+        if self.replacedSerialNumber != "":
+            body["replacedSerialNumber"] = str(self.replacedSerialNumber)
+        if self.cloudKey != "":
+            body["cloudKey"] = str(self.cloudKey)
         if self.location != {}:
             body["location"] = self.location
         return body
@@ -128,7 +128,7 @@ class RegistrationUnit(object):
         self._location = json.get("location", {})
 
     def __str__(self) -> str:
-        return f"RegistrationUnits(sn={self.serial_number})"
+        return f"RegistrationUnits(sn={self.serialNumber})"
 
 
 class LicenseRegistrationUnit(RegistrationUnit):
@@ -141,15 +141,15 @@ class LicenseRegistrationUnit(RegistrationUnit):
         self._license_registration_code = licence_registration_code
 
     @property
-    def license_registration_code(self) -> str:
+    def licenseRegistrationCode(self) -> str:
         """License registration code"""
         return self._license_registration_code
 
     def to_json(self) -> dict:
         """Return JSON object"""
         body = super().to_json()
-        if self.license_registration_code != "":
-            body["licenseRegistrationCode"] = str(self.license_registration_code)
+        if self.licenseRegistrationCode != "":
+            body["licenseRegistrationCode"] = str(self.licenseRegistrationCode)
         return dict(sorted(body.items()))
 
     def from_json(self, json: dict):
@@ -177,15 +177,15 @@ class ProductRegistrationUnit(RegistrationUnit):
         self._contract_number = contract_number
 
     @property
-    def contract_number(self) -> str:
+    def contractNumber(self) -> str:
         """Contract number"""
         return self._contract_number
 
     def to_json(self) -> dict:
         """Return JSON object"""
         body = super().to_json()
-        if self.contract_number != "":
-            body["contractNumber"] = str(self.contract_number)
+        if self.contractNumber != "":
+            body["contractNumber"] = str(self.contractNumber)
         return dict(sorted(body.items()))
 
     def from_json(self, json: dict):
@@ -222,7 +222,7 @@ class ServiceRegistrationUnit(object):
             raise ValueError("Contract number is empty")
 
     @property
-    def contract_number(self) -> str:
+    def contractNumber(self) -> str:
         """Contract number"""
         return self._contract_number
 
@@ -232,12 +232,12 @@ class ServiceRegistrationUnit(object):
         return self._description
 
     @property
-    def is_government(self) -> bool:
+    def isGovernment(self) -> bool:
         """Is government"""
         return self._is_government
 
     @property
-    def additional_info(self) -> str:
+    def additionalInfo(self) -> str:
         """Additional information"""
         return self._additional_info
 
@@ -245,11 +245,11 @@ class ServiceRegistrationUnit(object):
         """Return JSON object"""
         body = {
             "description": self.description,
-            "contractNumber": self.contract_number,
-            "isGovernment": self.is_government,
+            "contractNumber": self.contractNumber,
+            "isGovernment": self.isGovernment,
         }
-        if self.additional_info != "":
-            body["additionalInfo"] = str(self.additional_info)
+        if self.additionalInfo != "":
+            body["additionalInfo"] = str(self.additionalInfo)
         return dict(sorted(body.items()))
 
     def from_json(self, json: dict):
