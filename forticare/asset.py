@@ -9,12 +9,25 @@ __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
 
 
+def parse_datetime(date: str) -> datetime:
+    """Parse date string to datetime object"""
+    if date is None:
+        raise ValueError("Invalid date format: None")
+    _formats = ["%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S%z"]
+    for _f in _formats:
+        try:
+            return datetime.strptime(str(date), _f)
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid date format: {date}")
+
+
 # {
 #     "licenseNumber": "FMCLD4713562246",
 #     "licenseSKU": "FMG-VM-CLOUD",
 #     "serialNumber": "FMGVCLTM20000051",
 #     "status": "Registered"
-# },
+# }
 class License(object):
     """FortiCare License object"""
 
@@ -72,8 +85,8 @@ class Service(object):
     """FortiCare Entitlement or Warranty object"""
 
     def __init__(self, json: dict):
-        self._start_date = datetime.strptime(str(json.get("startDate")), "%Y-%m-%dT%H:%M:%S")
-        self._end_date = datetime.strptime(str(json.get("endDate")), "%Y-%m-%dT%H:%M:%S")
+        self._start_date = parse_datetime(json.get("startDate", None))
+        self._end_date = parse_datetime(json.get("endDate", None))
         self._level = json.get("level")
         self._level_desc = json.get("levelDesc")
         self._type = json.get("type")
@@ -112,8 +125,8 @@ class Service(object):
     def to_json(self) -> dict:
         """Get object as json"""
         return {
-            "startDate": self.start_date,
-            "endDate": self.end_date,
+            "startDate": self.start_date.strftime("%Y-%m-%dT%H:%M:%S"),
+            "endDate": self.end_date.strftime("%Y-%m-%dT%H:%M:%S"),
             "level": self.level,
             "levelDesc": self.level_desc,
             "type": self.type,
@@ -138,8 +151,8 @@ class Term(object):
         #     "startDate": "2020-09-23T00:00:00",
         #     "supportType": "Telephone Support",
         # },
-        self._start_date = datetime.strptime(str(json.get("startDate")), "%Y-%m-%dT%H:%M:%S")
-        self._end_date = datetime.strptime(str(json.get("endDate")), "%Y-%m-%dT%H:%M:%S")
+        self._start_date = parse_datetime(json.get("startDate", None))
+        self._end_date = parse_datetime(json.get("endDate", None))
         self._support_type = json.get("supportType", "")
 
     @property
@@ -160,8 +173,8 @@ class Term(object):
     def to_json(self) -> dict:
         """Get object as json"""
         return {
-            "startDate": self.start_date,
-            "endDate": self.end_date,
+            "startDate": self.start_date.strftime("%Y-%m-%dT%H:%M:%S"),
+            "endDate": self.end_date.strftime("%Y-%m-%dT%H:%M:%S"),
             "supportType": self.support_type,
         }
 
@@ -275,9 +288,7 @@ class Asset(object):
         self._description = json.get("description", "")
         self._is_decommissioned = json.get("isDecommissioned", "")
         self._product_model = json.get("productModel", "")
-        self._registration_date = None
-        if json.get("registrationDate"):
-            self._registration_date = datetime.strptime(str(json.get("registrationDate")), "%Y-%m-%dT%H:%M:%S")
+        self._registration_date = parse_datetime(json.get("registrationDate", None))
         self._serial_number = json.get("serialNumber", "")
         self._entitlements = []
         for entitlement in json.get("entitlements", []):
@@ -326,7 +337,7 @@ class Asset(object):
         return self._product_model
 
     @property
-    def registration_date(self) -> Union[datetime, None]:
+    def registration_date(self) -> datetime:
         """Get asset registration date"""
         return self._registration_date
 
@@ -411,7 +422,7 @@ class Asset(object):
             "productModel": self.product_model,
             "productModelEoR": self.product_model_eor,
             "productModelEoS": self.product_model_eos,
-            "registrationDate": self.registration_date,
+            "registrationDate": self.registration_date.strftime("%Y-%m-%dT%H:%M:%S"),
             "serialNumber": self.serial_number,
             "warrantySupports": [warranty_support.to_json() for warranty_support in self.warranty_supports],
             "status": self.status,
