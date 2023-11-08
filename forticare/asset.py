@@ -236,6 +236,38 @@ class Contract(object):
         return False
 
 
+class AssetGroup(object):
+    """FortiCare Asset Group object"""
+
+    def __init__(self, json: dict) -> None:
+        # {"assetGroupId": "<integer>", "assetGroup": "<string>"},
+        self._asset_group_id = json.get("assetGroupId", 0)
+        self._asset_group = json.get("assetGroup", "")
+
+    @property
+    def asset_group_id(self) -> int:
+        """Get asset group ID"""
+        return self._asset_group_id
+
+    @property
+    def asset_group(self) -> str:
+        """Get asset group"""
+        return self._asset_group
+
+    def to_json(self) -> dict:
+        """Get object as json"""
+        return {
+            "assetGroupId": self.asset_group_id,
+            "assetGroup": self.asset_group,
+        }
+
+    def __str__(self) -> str:
+        return f"AssetGroup: {self.asset_group}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
 class Asset(object):
     """FortiCare Asset object"""
 
@@ -255,7 +287,11 @@ class Asset(object):
         if __warranty_supports:
             for warranty_support in __warranty_supports:
                 self._warranty_supports.append(Service(warranty_support))
-        self._asset_groups = json.get("assetGroups", [])
+        __asset_groups = json.get("assetGroups", [])
+        self._asset_groups = []
+        if __asset_groups:
+            for asset_group in __asset_groups:
+                self._asset_groups.append(AssetGroup(asset_group))
         __contracts = json.get("contracts", [])
         self._contracts = []
         if __contracts:
@@ -310,7 +346,7 @@ class Asset(object):
         return self._warranty_supports
 
     @property
-    def asset_groups(self) -> str:
+    def asset_groups(self) -> list[AssetGroup]:
         """Get asset asset groups"""
         return self._asset_groups
 
@@ -362,7 +398,7 @@ class Asset(object):
     def to_json(self) -> dict:
         """Get object as json"""
         return {
-            "assetGroups": self.asset_groups,
+            "assetGroups": [asset_group.to_json() for asset_group in self.asset_groups],
             "contracts": [contract.to_json() for contract in self.contracts],
             "description": self.description,
             "entitlements": [entitlement.to_json() for entitlement in self.entitlements],
