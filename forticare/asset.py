@@ -129,6 +129,113 @@ class Service(object):
         return False
 
 
+class Term(object):
+    """FortiCare Term object"""
+
+    def __init__(self, json: dict) -> None:
+        # {
+        #     "endDate": "2021-09-23T00:00:00",
+        #     "startDate": "2020-09-23T00:00:00",
+        #     "supportType": "Telephone Support",
+        # },
+        self._start_date = datetime.strptime(str(json.get("startDate")), "%Y-%m-%dT%H:%M:%S")
+        self._end_date = datetime.strptime(str(json.get("endDate")), "%Y-%m-%dT%H:%M:%S")
+        self._support_type = json.get("supportType", "")
+
+    @property
+    def start_date(self) -> datetime:
+        """Get service start date"""
+        return self._start_date
+
+    @property
+    def end_date(self) -> datetime:
+        """Get service end date"""
+        return self._end_date
+
+    @property
+    def support_type(self) -> str:
+        """Get service support type"""
+        return self._support_type
+
+    def to_json(self) -> dict:
+        """Get object as json"""
+        return {
+            "startDate": self.start_date,
+            "endDate": self.end_date,
+            "supportType": self.support_type,
+        }
+
+    def __str__(self) -> str:
+        return f"Term: {self.support_type}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+class Contract(object):
+    """FortiCare Contract object"""
+
+    def __init__(self, json: dict) -> None:
+        # {
+        #     "contractNumber": "5762CL381100",
+        #     "sku": "FC2-10-CGSLB-330-02-12",
+        #     "terms": [
+        #         {
+        #             "endDate": "2021-09-23T00:00:00",
+        #             "startDate": "2020-09-23T00:00:00",
+        #             "supportType": "Telephone Support",
+        #         },
+        #         {
+        #             "endDate": "2021-09-23T00:00:00",
+        #             "startDate": "2020-09-23T00:00:00",
+        #             "supportType": "Enhanced Support",
+        #         },
+        #     ],
+        # },
+        self._contract_number = json.get("contractNumber", "")
+        self._sku = json.get("sku", "")
+        self._terms = []
+        for term in json.get("terms", []):
+            self._terms.append(Term(term))
+
+    @property
+    def contract_number(self) -> str:
+        """Get contract number"""
+        return self._contract_number
+
+    @property
+    def sku(self) -> str:
+        """Get SKU"""
+        return self._sku
+
+    @property
+    def terms(self) -> list[Term]:
+        """Get terms"""
+        return self._terms
+
+    def to_json(self) -> dict:
+        """Get object as json"""
+        return {
+            "contractNumber": self.contract_number,
+            "sku": self.sku,
+            "terms": [term.to_json() for term in self.terms],
+        }
+
+    def __str__(self) -> str:
+        return f"Contract: {self.sku} - {self.contract_number}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __hash__(self) -> int:
+        return hash(self.contract_number)
+
+    def __eq__(self, other) -> bool:
+        if self.contract_number == other.contract_number:
+            return True
+        return False
+
+
 class Asset(object):
     """FortiCare Asset object"""
 
@@ -149,7 +256,11 @@ class Asset(object):
             for warranty_support in __warranty_supports:
                 self._warranty_supports.append(Service(warranty_support))
         self._asset_groups = json.get("assetGroups", [])
-        self._contracts = json.get("contracts", "")
+        __contracts = json.get("contracts", [])
+        self._contracts = []
+        if __contracts:
+            for contract in json.get("contracts", []):
+                self._contracts.append(Contract(contract))
         self._product_model_eor = json.get("productModelEoR", "")
         self._product_model_eos = json.get("productModelEoS", "")
         __licenses = json.get("licenses", [])
@@ -204,7 +315,7 @@ class Asset(object):
         return self._asset_groups
 
     @property
-    def contracts(self) -> str:
+    def contracts(self) -> list[Contract]:
         """Get asset contracts"""
         return self._contracts
 
@@ -252,7 +363,7 @@ class Asset(object):
         """Get object as json"""
         return {
             "assetGroups": self.asset_groups,
-            "contracts": self.contracts,
+            "contracts": [contract.to_json() for contract in self.contracts],
             "description": self.description,
             "entitlements": [entitlement.to_json() for entitlement in self.entitlements],
             "folderId": self.folder_id,
