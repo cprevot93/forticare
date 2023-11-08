@@ -161,7 +161,7 @@ class BasicTestSuite(unittest.TestCase):
         print(asset)
         self.assertTrue(asset)
         self.assertTrue(isinstance(asset, Asset))
-        self.assertTrue(asset.serial_number == "FCGSLB0000000205")
+        self.assertTrue(asset.serialNumber == "FCGSLB0000000205")
         self.assertTrue(asset.productModel == "FortiGSLB Cloud")
         self.assertTrue(asset.registrationDate == dt.datetime(2020, 9, 23, 2, 46, 42))
         self.assertTrue(asset.description == "")
@@ -183,8 +183,8 @@ class BasicTestSuite(unittest.TestCase):
         self.assertTrue(asset.entitlements[3].endDate == dt.datetime(2021, 9, 23, 0, 0))
         self.assertTrue(isinstance(asset.warrantySupports, list))
         self.assertTrue(asset.warrantySupports == [])
-        self.assertTrue(isinstance(asset.asset_groups, list))
-        self.assertTrue(asset.asset_groups == [])
+        self.assertTrue(isinstance(asset.assetGroups, list))
+        self.assertTrue(asset.assetGroups == [])
         self.assertTrue(isinstance(asset.contracts, list))
         self.assertTrue(isinstance(asset.contracts[0], dict))
         # self.assertTrue(asset.contracts[0]["contractNumber"] == "5762CL381100")
@@ -203,7 +203,7 @@ class BasicTestSuite(unittest.TestCase):
         # self.assertTrue(asset.contracts[1]["terms"][0]["startDate"] == dt.datetime(2020, 9, 23, 0, 0))
         # self.assertTrue(asset.contracts[1]["terms"][0]["supportType"] == "Telephone Support")
         self.assertTrue(asset.productModelEor is None)
-        self.assertTrue(asset.product_model_eos is None)
+        self.assertTrue(asset.productModelEos is None)
         self.assertTrue(asset.status == "Registered")
 
     def test_service_class(self):
@@ -265,7 +265,7 @@ class BasicTestSuite(unittest.TestCase):
         print(res)
         self.assertTrue(res)
         self.assertTrue(isinstance(res, Asset))
-        self.assertTrue(res.serial_number == sn)
+        self.assertTrue(res.serialNumber == sn)
         self.assertTrue(res.productModel == "FortiGSLB Cloud")
 
     def test_get_licenses(self):
@@ -339,7 +339,7 @@ class BasicTestSuite(unittest.TestCase):
         }
         with patch.object(FortiCare, "_post", return_value=_ret) as mock_method:
             unit = ProductRegistrationUnit(
-                serial_number="FEVM04TM23000333", contract_number="2863TP100247", description="", is_government=False
+                serialNumber="FEVM04TM23000333", contractNumber="2863TP100247", description="", isGovernment=False
             )
             self.forticare.register_product([unit], [])
 
@@ -405,7 +405,7 @@ class BasicTestSuite(unittest.TestCase):
             },
         }
         with patch.object(FortiCare, "_post", return_value=_ret) as mock_method:
-            service = ServiceRegistrationUnit(contract_number="2863TP100247", description="", is_government=False)
+            service = ServiceRegistrationUnit(contractNumber="2863TP100247", description="", isGovernment=False)
             self.forticare.register_services(service)
 
         mock_method.assert_called_once_with(
@@ -457,10 +457,10 @@ class BasicTestSuite(unittest.TestCase):
         }
         with patch.object(FortiCare, "_post", return_value=_ret) as mock_method:
             license = LicenseRegistrationUnit(
-                serial_number="FSMAI4714475459",
-                licence_registration_code="2863TP100247",
+                licenseRegistrationCode="2863TP100247",
+                serialNumber="FSMAI4714475459",
                 description="",
-                is_government=False,
+                isGovernment=False,
             )
             self.forticare.register_licenses(license)
 

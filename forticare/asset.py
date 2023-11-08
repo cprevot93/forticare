@@ -32,30 +32,10 @@ class License(object):
     """FortiCare License object"""
 
     def __init__(self, json: dict):
-        self._license_number = json.get("licenseNumber", "")
-        self._license_sku = json.get("licenseSKU", "")
-        self._serial_number = json.get("serialNumber", "")
-        self._status = json.get("status", "")
-
-    @property
-    def licenseNumber(self) -> str:
-        """Get license number"""
-        return self._license_number
-
-    @property
-    def licenseSKU(self) -> str:
-        """Get license SKU"""
-        return self._license_sku
-
-    @property
-    def serialNumber(self) -> str:
-        """Get serial number"""
-        return self._serial_number
-
-    @property
-    def status(self) -> str:
-        """Get status"""
-        return self._status
+        self.licenseNumber = json.get("licenseNumber", "")
+        self.licenseSKU = json.get("licenseSKU", "")
+        self.serialNumber = json.get("serialNumber", "")
+        self.status = json.get("status", "")
 
     def to_json(self) -> dict:
         """Get object as json"""
@@ -85,42 +65,12 @@ class Service(object):
     """FortiCare Entitlement or Warranty object"""
 
     def __init__(self, json: dict):
-        self._start_date = parse_datetime(json.get("startDate", None))
-        self._end_date = parse_datetime(json.get("endDate", None))
-        self._level = json.get("level")
-        self._level_desc = json.get("levelDesc")
-        self._type = json.get("type")
-        self._type_desc = json.get("typeDesc")
-
-    @property
-    def startDate(self) -> datetime:
-        """Get service start date"""
-        return self._start_date
-
-    @property
-    def endDate(self) -> datetime:
-        """Get service end date"""
-        return self._end_date
-
-    @property
-    def level(self) -> int:
-        """Get service level"""
-        return self._level
-
-    @property
-    def levelDesc(self) -> str:
-        """Get service level description"""
-        return self._level_desc
-
-    @property
-    def type(self) -> int:
-        """Get service type"""
-        return self._type
-
-    @property
-    def typeDesc(self) -> str:
-        """Get service type description"""
-        return self._type_desc
+        self.startDate = parse_datetime(json.get("startDate", None))
+        self.endDate = parse_datetime(json.get("endDate", None))
+        self.level = json.get("level")
+        self.levelDesc = json.get("levelDesc")
+        self.type = json.get("type")
+        self.typeDesc = json.get("typeDesc")
 
     def to_json(self) -> dict:
         """Get object as json"""
@@ -151,24 +101,9 @@ class Term(object):
         #     "startDate": "2020-09-23T00:00:00",
         #     "supportType": "Telephone Support",
         # },
-        self._start_date = parse_datetime(json.get("startDate", None))
-        self._end_date = parse_datetime(json.get("endDate", None))
-        self._support_type = json.get("supportType", "")
-
-    @property
-    def startDate(self) -> datetime:
-        """Get service start date"""
-        return self._start_date
-
-    @property
-    def endDate(self) -> datetime:
-        """Get service end date"""
-        return self._end_date
-
-    @property
-    def supportType(self) -> str:
-        """Get service support type"""
-        return self._support_type
+        self.startDate = parse_datetime(json.get("startDate", None))
+        self.endDate = parse_datetime(json.get("endDate", None))
+        self.supportType = json.get("supportType", "")
 
     def to_json(self) -> dict:
         """Get object as json"""
@@ -205,26 +140,11 @@ class Contract(object):
         #         },
         #     ],
         # },
-        self._contract_number = json.get("contractNumber", "")
-        self._sku = json.get("sku", "")
-        self._terms = []
+        self.contractNumber = json.get("contractNumber", "")
+        self.sku = json.get("sku", "")
+        self.terms = []
         for term in json.get("terms", []):
-            self._terms.append(Term(term))
-
-    @property
-    def contractNumber(self) -> str:
-        """Get contract number"""
-        return self._contract_number
-
-    @property
-    def sku(self) -> str:
-        """Get SKU"""
-        return self._sku
-
-    @property
-    def terms(self) -> list[Term]:
-        """Get terms"""
-        return self._terms
+            self.terms.append(Term(term))
 
     def to_json(self) -> dict:
         """Get object as json"""
@@ -254,18 +174,8 @@ class AssetGroup(object):
 
     def __init__(self, json: dict) -> None:
         # {"assetGroupId": "<integer>", "assetGroup": "<string>"},
-        self._asset_group_id = json.get("assetGroupId", 0)
-        self._asset_group = json.get("assetGroup", "")
-
-    @property
-    def assetGroupId(self) -> int:
-        """Get asset group ID"""
-        return self._asset_group_id
-
-    @property
-    def assetGroup(self) -> str:
-        """Get asset group"""
-        return self._asset_group
+        self.assetGroupId = json.get("assetGroupId", 0)
+        self.assetGroup = json.get("assetGroup", "")
 
     def to_json(self) -> dict:
         """Get object as json"""
@@ -285,131 +195,46 @@ class Asset(object):
     """FortiCare Asset object"""
 
     def __init__(self, json: dict):
-        self._description = json.get("description", "")
-        self._is_decommissioned = json.get("isDecommissioned", "")
-        self._product_model = json.get("productModel", "")
-        self._registration_date = parse_datetime(json.get("registrationDate", None))
-        self._serial_number = json.get("serialNumber", "")
-        self._entitlements = []
+        self.description = json.get("description", "")
+        self.isDecommissioned = json.get("isDecommissioned", "")
+        self.productModel = json.get("productModel", "")
+        self.registrationDate = parse_datetime(json.get("registrationDate", None))
+        self.serialNumber = json.get("serialNumber", "")
+        self.entitlements = []
         for entitlement in json.get("entitlements", []):
-            self._entitlements.append(Service(entitlement))
+            self.entitlements.append(Service(entitlement))
         __warranty_supports = json.get("warrantySupports", [])
-        self._warranty_supports = []
+        self.warrantySupports = []
         if __warranty_supports:
             for warranty_support in __warranty_supports:
-                self._warranty_supports.append(Service(warranty_support))
+                self.warrantySupports.append(Service(warranty_support))
         __asset_groups = json.get("assetGroups", [])
-        self._asset_groups = []
+        self.assetGroups = []
         if __asset_groups:
             for asset_group in __asset_groups:
-                self._asset_groups.append(AssetGroup(asset_group))
+                self.assetGroups.append(AssetGroup(asset_group))
         __contracts = json.get("contracts", [])
-        self._contracts = []
+        self.contracts = []
         if __contracts:
             for contract in json.get("contracts", []):
-                self._contracts.append(Contract(contract))
-        self._product_model_eor = json.get("productModelEoR", "")
-        self._product_model_eos = json.get("productModelEoS", "")
+                self.contracts.append(Contract(contract))
+        self.productModelEor = json.get("productModelEoR", "")
+        self.productModelEos = json.get("productModelEoS", "")
         __licenses = json.get("licenses", [])
-        self._licenses = []
+        self.licenses = []
         if __licenses:
             for license in __licenses:
-                self._licenses.append(License(license))
-        self._location = json.get("location", "")
-        self._partner = json.get("partner", "")
-        self._folder_id = json.get("folderId", "")
-        self._folder_path = json.get("folderPath", "")
-        self._status = json.get("status", "")
-
-    @property
-    def description(self) -> str:
-        """Get asset description"""
-        return self._description
-
-    @property
-    def isDecommissioned(self) -> bool:
-        """Get asset decommissioned status"""
-        return self._is_decommissioned
-
-    @property
-    def productModel(self) -> str:
-        """Get asset product model"""
-        return self._product_model
-
-    @property
-    def registrationDate(self) -> datetime:
-        """Get asset registration date"""
-        return self._registration_date
-
-    @property
-    def serial_number(self) -> str:
-        """Get asset serial number"""
-        return self._serial_number
-
-    @property
-    def entitlements(self) -> list[Service]:
-        """Get asset entitlements"""
-        return self._entitlements
-
-    @property
-    def warrantySupports(self) -> list[Service]:
-        """Get asset warranty supports"""
-        return self._warranty_supports
-
-    @property
-    def asset_groups(self) -> list[AssetGroup]:
-        """Get asset asset groups"""
-        return self._asset_groups
-
-    @property
-    def contracts(self) -> list[Contract]:
-        """Get asset contracts"""
-        return self._contracts
-
-    @property
-    def productModelEor(self) -> str:
-        """Get asset product model EOR"""
-        return self._product_model_eor
-
-    @property
-    def product_model_eos(self) -> str:
-        """Get asset product model EOS"""
-        return self._product_model_eos
-
-    @property
-    def licenses(self) -> list[License]:
-        """Get asset license"""
-        return self._licenses
-
-    @property
-    def location(self) -> str:
-        """Get asset location"""
-        return self._location
-
-    @property
-    def partner(self) -> str:
-        """Get asset partner"""
-        return self._partner
-
-    @property
-    def folderId(self) -> int:
-        """Get asset folder ID"""
-        return self._folder_id
-
-    @property
-    def folderPath(self) -> str:
-        """Get asset folder path"""
-        return self._folder_path
-
-    @property
-    def status(self) -> str:
-        """Get asset status"""
-        return self._status
+                self.licenses.append(License(license))
+        self.location = json.get("location", "")
+        self.partner = json.get("partner", "")
+        self.folderId = json.get("folderId", "")
+        self.folderPath = json.get("folderPath", "")
+        self.status = json.get("status", "")
 
     def to_json(self) -> dict:
         """Get object as json"""
         return {
-            "assetGroups": [asset_group.to_json() for asset_group in self.asset_groups],
+            "assetGroups": [asset_group.to_json() for asset_group in self.assetGroups],
             "contracts": [contract.to_json() for contract in self.contracts],
             "description": self.description,
             "entitlements": [entitlement.to_json() for entitlement in self.entitlements],
@@ -421,20 +246,20 @@ class Asset(object):
             "partner": self.partner,
             "productModel": self.productModel,
             "productModelEoR": self.productModelEor,
-            "productModelEoS": self.product_model_eos,
+            "productModelEoS": self.productModelEos,
             "registrationDate": self.registrationDate.strftime("%Y-%m-%dT%H:%M:%S"),
-            "serialNumber": self.serial_number,
+            "serialNumber": self.serialNumber,
             "warrantySupports": [warranty_support.to_json() for warranty_support in self.warrantySupports],
             "status": self.status,
         }
 
     def __str__(self) -> str:
-        return f"Asset: {self.productModel} - {self.serial_number}"
+        return f"Asset: {self.productModel} - {self.serialNumber}"
 
     def __repr__(self) -> str:
-        return f"Asset({self.serial_number}, {self.productModel})"
+        return f"Asset({self.serialNumber}, {self.productModel})"
 
     def __eq__(self, other) -> bool:
-        if self.serial_number == other.serial_number:
+        if self.serialNumber == other.serialNumber:
             return True
         return False

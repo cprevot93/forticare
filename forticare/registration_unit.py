@@ -25,73 +25,28 @@ class RegistrationUnit(object):
 
     def __init__(
         self,
-        serial_number: str,
+        serialNumber: str,
         description: str = "",
-        is_government: bool = False,
-        additional_info: str = "",
-        folder_id: str = "",
-        asset_group_ids: str = "",
-        replaced_serial_number: str = "",
-        cloud_key: str = "",
+        isGovernment: bool = False,
+        additionalInfo: str = "",
+        folderId: str = "",
+        assetGroupIds: str = "",
+        replacedSerialNumber: str = "",
+        cloudKey: str = "",
         location: dict = {},
     ):
-        self._serial_number = serial_number
-        self._description = description
-        self._is_government = is_government
-        self._additional_info = additional_info
-        self._folder_id = folder_id
-        self._asset_group_ids = asset_group_ids
-        self._replaced_serial_number = replaced_serial_number
-        self._cloud_key = cloud_key
-        self._location = location
+        self.serialNumber = serialNumber
+        self.description = description
+        self.isGovernment = isGovernment
+        self.additionalInfo = additionalInfo
+        self.folderId = folderId
+        self.assetGroupIds = assetGroupIds
+        self.replacedSerialNumber = replacedSerialNumber
+        self.cloudKey = cloudKey
+        self.location = location
 
-        if self._serial_number == "":
+        if self.serialNumber == "":
             raise Exception("Serial number is empty")
-
-    @property
-    def serialNumber(self) -> str:
-        """Serial number"""
-        return self._serial_number
-
-    @property
-    def description(self) -> str:
-        """Description"""
-        return self._description
-
-    @property
-    def isGovernment(self) -> bool:
-        """Is government"""
-        return self._is_government
-
-    @property
-    def additionalInfo(self) -> str:
-        """Additional information"""
-        return self._additional_info
-
-    @property
-    def folderId(self) -> str:
-        """Folder ID"""
-        return self._folder_id
-
-    @property
-    def assetGroupIds(self) -> str:
-        """Asset group IDs"""
-        return self._asset_group_ids
-
-    @property
-    def replacedSerialNumber(self) -> str:
-        """Replaced serial number"""
-        return self._replaced_serial_number
-
-    @property
-    def cloudKey(self) -> str:
-        """Cloud key"""
-        return self._cloud_key
-
-    @property
-    def location(self) -> dict:
-        """Location"""
-        return self._location
 
     def to_json(self) -> dict:
         """Return JSON object"""
@@ -115,18 +70,6 @@ class RegistrationUnit(object):
             body["location"] = self.location
         return body
 
-    def from_json(self, json: dict):
-        """Populate from JSON object"""
-        self._serial_number = json.get("serialNumber", "")
-        self._description = json.get("description", "")
-        self._is_government = json.get("isGovernment", False)
-        self._additional_info = json.get("additionalInfo", "")
-        self._folder_id = json.get("folderId", "")
-        self._asset_group_ids = json.get("assetGroupIds", "")
-        self._replaced_serial_number = json.get("replacedSerialNumber", "")
-        self._cloud_key = json.get("cloudKey", "")
-        self._location = json.get("location", {})
-
     def __str__(self) -> str:
         return f"RegistrationUnits(sn={self.serialNumber})"
 
@@ -136,14 +79,9 @@ class LicenseRegistrationUnit(RegistrationUnit):
     License registration units object
     """
 
-    def __init__(self, licence_registration_code: str, *args, **kwargs):
+    def __init__(self, licenseRegistrationCode: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._license_registration_code = licence_registration_code
-
-    @property
-    def licenseRegistrationCode(self) -> str:
-        """License registration code"""
-        return self._license_registration_code
+        self.licenseRegistrationCode = licenseRegistrationCode
 
     def to_json(self) -> dict:
         """Return JSON object"""
@@ -152,19 +90,14 @@ class LicenseRegistrationUnit(RegistrationUnit):
             body["licenseRegistrationCode"] = str(self.licenseRegistrationCode)
         return dict(sorted(body.items()))
 
-    def from_json(self, json: dict):
-        """Populate from JSON object"""
-        super().from_json(json)
-        self._license_registration_code = json.get("licenseRegistrationCode", "")
-
     def __str__(self) -> str:
-        return f"LicenseRegistrationUnits(code={self._license_registration_code})"
+        return f"LicenseRegistrationUnits(code={self.licenseRegistrationCode})"
 
     def __eq__(self, other) -> bool:
-        return self._license_registration_code == other._license_registration_code
+        return self.licenseRegistrationCode == other._license_registration_code
 
     def __hash__(self) -> int:
-        return hash(self._license_registration_code)
+        return hash(self.licenseRegistrationCode)
 
 
 class ProductRegistrationUnit(RegistrationUnit):
@@ -172,14 +105,9 @@ class ProductRegistrationUnit(RegistrationUnit):
     Product registration units object
     """
 
-    def __init__(self, contract_number: str, *args, **kwargs):
+    def __init__(self, contractNumber: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._contract_number = contract_number
-
-    @property
-    def contractNumber(self) -> str:
-        """Contract number"""
-        return self._contract_number
+        self.contractNumber = contractNumber
 
     def to_json(self) -> dict:
         """Return JSON object"""
@@ -188,19 +116,14 @@ class ProductRegistrationUnit(RegistrationUnit):
             body["contractNumber"] = str(self.contractNumber)
         return dict(sorted(body.items()))
 
-    def from_json(self, json: dict):
-        """Populate from JSON object"""
-        super().from_json(json)
-        self._contract_number = json.get("contractNumber", "")
-
     def __str__(self) -> str:
-        return f"ProductRegistrationUnits(contract={self._contract_number})"
+        return f"ProductRegistrationUnits(contract={self.contractNumber})"
 
     def __eq__(self, other) -> bool:
-        return self._contract_number == other._contract_number
+        return self.contractNumber == other._contract_number
 
     def __hash__(self) -> int:
-        return hash(self._contract_number)
+        return hash(self.contractNumber)
 
 
 class ServiceRegistrationUnit(object):
@@ -208,38 +131,18 @@ class ServiceRegistrationUnit(object):
 
     def __init__(
         self,
-        contract_number: str,
+        contractNumber: str,
         description: str = "",
-        is_government: bool = False,
-        additional_info: str = "",
+        isGovernment: bool = False,
+        additionalInfo: str = "",
     ):
-        self._contract_number = contract_number
-        self._description = description
-        self._is_government = is_government
-        self._additional_info = additional_info
+        self.contractNumber = contractNumber
+        self.description = description
+        self.isGovernment = isGovernment
+        self.additionalInfo = additionalInfo
 
-        if self._contract_number == "":
+        if self.contractNumber == "":
             raise ValueError("Contract number is empty")
-
-    @property
-    def contractNumber(self) -> str:
-        """Contract number"""
-        return self._contract_number
-
-    @property
-    def description(self) -> str:
-        """Description"""
-        return self._description
-
-    @property
-    def isGovernment(self) -> bool:
-        """Is government"""
-        return self._is_government
-
-    @property
-    def additionalInfo(self) -> str:
-        """Additional information"""
-        return self._additional_info
 
     def to_json(self) -> dict:
         """Return JSON object"""
@@ -252,21 +155,14 @@ class ServiceRegistrationUnit(object):
             body["additionalInfo"] = str(self.additionalInfo)
         return dict(sorted(body.items()))
 
-    def from_json(self, json: dict):
-        """Populate from JSON object"""
-        self._contract_number = json.get("contractNumber", "")
-        self._description = json.get("description", "")
-        self._is_government = json.get("isGovernment", False)
-        self._additional_info = json.get("additionalInfo", "")
-
     def __str__(self) -> str:
-        return f"ServiceRegistrationUnits(contract={self._contract_number})"
+        return f"ServiceRegistrationUnits(contract={self.contractNumber})"
 
     def __eq__(self, other) -> bool:
-        return self._contract_number == other._contrat_number
+        return self.contractNumber == other._contrat_number
 
     def __hash__(self) -> int:
-        return hash(self._contract_number)
+        return hash(self.contractNumber)
 
     def __repr__(self) -> str:
         return self.__str__()

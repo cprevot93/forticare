@@ -23,69 +23,24 @@ class Location(object):
     def __init__(
         self,
         address: str = "",
-        postal_code: str = "",
-        country_code: str = "",
+        postalCode: str = "",
+        countryCode: str = "",
         city: str = "",
-        state_or_province: str = "",
+        stateOrProvince: str = "",
         company: str = "",
         email: str = "",
         phone: str = "",
         fax: str = "",
     ):
-        self._company = company
-        self._address = address
-        self._city = city
-        self._state_or_province = state_or_province
-        self._country_code = country_code
-        self._postal_code = postal_code
-        self._email = email
-        self._phone = phone
-        self._fax = fax
-
-    @property
-    def company(self) -> str:
-        """Company"""
-        return self._company
-
-    @property
-    def address(self) -> str:
-        """Address"""
-        return self._address
-
-    @property
-    def city(self) -> str:
-        """City"""
-        return self._city
-
-    @property
-    def stateOrProvince(self) -> str:
-        """State or province"""
-        return self._state_or_province
-
-    @property
-    def countryCode(self) -> str:
-        """Country code"""
-        return self._country_code
-
-    @property
-    def postalCode(self) -> str:
-        """Postal code"""
-        return self._postal_code
-
-    @property
-    def email(self) -> str:
-        """Email"""
-        return self._email
-
-    @property
-    def phone(self) -> str:
-        """Phone"""
-        return self._phone
-
-    @property
-    def fax(self) -> str:
-        """Fax"""
-        return self._fax
+        self.company = company
+        self.address = address
+        self.city = city
+        self.stateOrProvince = stateOrProvince
+        self.countryCode = countryCode
+        self.postalCode = postalCode
+        self.email = email
+        self.phone = phone
+        self.fax = fax
 
     def to_json(self) -> dict:
         """Return JSON object"""
@@ -110,30 +65,18 @@ class Location(object):
             body["fax"] = str(self.fax)
         return body
 
-    def from_json(self, json: dict) -> None:
-        """Populate from JSON object"""
-        self._company = json.get("company", "")
-        self._address = json.get("address", "")
-        self._city = json.get("city", "")
-        self._state_or_province = json.get("stateOrProvince", "")
-        self._country_code = json.get("countryCode", "")
-        self._postal_code = json.get("postalCode", "")
-        self._email = json.get("email", "")
-        self._phone = json.get("phone", "")
-        self._fax = json.get("fax", "")
-
     def __str__(self) -> str:
-        return f"Location({self._address}, {self._city}, {self._state_or_province} {self._country_code} {self._postal_code})"
+        return f"Location({self.address}, {self.city}, {self.stateOrProvince} {self.countryCode} {self.postalCode})"
 
     def __repr__(self) -> str:
-        return f"Location({self._address})"
+        return f"Location({self.address})"
 
     def __eq__(self, other) -> bool:
         return (
-            self._address == other._address
-            and self._postal_code == other._postal_code
-            and self._country_code == other._country_code
+            self.address == other._address
+            and self.postalCode == other._postal_code
+            and self.countryCode == other._country_code
         )
 
     def __hash__(self) -> int:
-        return hash(self._address + self._postal_code + self._country_code)
+        return hash(self.address + self.postalCode + self.countryCode)
