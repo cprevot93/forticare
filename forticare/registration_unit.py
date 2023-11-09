@@ -94,10 +94,12 @@ class LicenseRegistrationUnit(RegistrationUnit):
         return f"LicenseRegistrationUnits(code={self.licenseRegistrationCode})"
 
     def __eq__(self, other) -> bool:
-        return self.licenseRegistrationCode == other._license_registration_code
+        if self.licenseRegistrationCode == "":
+            return self.serialNumber == other.serialNumber
+        return self.licenseRegistrationCode == other.licenseRegistrationCode and self.serialNumber == other.serialNumber
 
     def __hash__(self) -> int:
-        return hash(self.licenseRegistrationCode)
+        return hash(self.serialNumber + self.licenseRegistrationCode)
 
 
 class ProductRegistrationUnit(RegistrationUnit):
@@ -120,10 +122,12 @@ class ProductRegistrationUnit(RegistrationUnit):
         return f"ProductRegistrationUnits(contract={self.contractNumber})"
 
     def __eq__(self, other) -> bool:
-        return self.contractNumber == other._contract_number
+        if self.contractNumber == "":
+            return self.serialNumber == other.serialNumber
+        return self.contractNumber == other.contractNumber and self.serialNumber == other.serialNumber
 
     def __hash__(self) -> int:
-        return hash(self.contractNumber)
+        return hash(self.serialNumber + self.contractNumber)
 
 
 class ServiceRegistrationUnit(object):
@@ -159,7 +163,7 @@ class ServiceRegistrationUnit(object):
         return f"ServiceRegistrationUnits(contract={self.contractNumber})"
 
     def __eq__(self, other) -> bool:
-        return self.contractNumber == other._contrat_number
+        return self.contractNumber == other.contratNumber
 
     def __hash__(self) -> int:
         return hash(self.contractNumber)
