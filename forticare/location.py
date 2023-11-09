@@ -73,9 +73,9 @@ class Location(object):
 
     def __eq__(self, other) -> bool:
         return (
-            self.address == other._address
-            and self.postalCode == other._postal_code
-            and self.countryCode == other._country_code
+            self.address == other.address
+            and self.postalCode == other.postalCode
+            and self.countryCode == other.countryCode
         )
 
     def __hash__(self) -> int:
