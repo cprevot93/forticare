@@ -179,7 +179,7 @@ def get_product_details(self, serial_number: str) -> Asset:
 #     ...
 #   ]
 # }
-def register_product(self, units: list[ProductRegistrationUnit], locations: list) -> list[Asset]:
+def register_product(self, units: list[ProductRegistrationUnit], locations: list) -> bool:
     """
     Register products.
     :param units: Registration units
@@ -207,4 +207,11 @@ def register_product(self, units: list[ProductRegistrationUnit], locations: list
         LOG.error(">>> Failed to register product: %s", str(exp.args))
         raise exp
 
-    return [Asset(asset) for asset in results["assets"]]
+    asset_list = [Asset(asset) for asset in results["assets"]]
+    for asset in asset_list:
+        if asset.status == "Registered":
+            for unit in units:
+                if asset.serialNumber == unit.serialNumber:
+                    break
+                return False
+    return True
