@@ -25,7 +25,7 @@ class RegistrationUnit(object):
 
     def __init__(
         self,
-        serialNumber: str,
+        serialNumber: str = "",
         description: str = "",
         isGovernment: bool = False,
         additionalInfo: str = "",
@@ -44,9 +44,6 @@ class RegistrationUnit(object):
         self.replacedSerialNumber = replacedSerialNumber
         self.cloudKey = cloudKey
         self.location = location
-
-        if self.serialNumber == "":
-            raise Exception("Serial number is empty")
 
     def to_json(self) -> dict:
         """Return JSON object"""
@@ -79,8 +76,30 @@ class LicenseRegistrationUnit(RegistrationUnit):
     License registration units object
     """
 
-    def __init__(self, licenseRegistrationCode: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        licenseRegistrationCode: str,
+        serialNumber: str = "",
+        description: str = "",
+        isGovernment: bool = False,
+        additionalInfo: str = "",
+        folderId: str = "",
+        assetGroupIds: str = "",
+        replacedSerialNumber: str = "",
+        cloudKey: str = "",
+        location: dict = {},
+    ):
+        super().__init__(
+            serialNumber,
+            description,
+            isGovernment,
+            additionalInfo,
+            folderId,
+            assetGroupIds,
+            replacedSerialNumber,
+            cloudKey,
+            location,
+        )
         self.licenseRegistrationCode = licenseRegistrationCode
 
     def to_json(self) -> dict:
@@ -107,8 +126,32 @@ class ProductRegistrationUnit(RegistrationUnit):
     Product registration units object
     """
 
-    def __init__(self, contractNumber: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        contractNumber: str,
+        serialNumber: str,
+        description: str = "",
+        isGovernment: bool = False,
+        additionalInfo: str = "",
+        folderId: str = "",
+        assetGroupIds: str = "",
+        replacedSerialNumber: str = "",
+        cloudKey: str = "",
+        location: dict = {},
+    ):
+        if serialNumber is None or serialNumber == "":
+            raise ValueError("Serial number can't be empty")
+        super().__init__(
+            serialNumber,
+            description,
+            isGovernment,
+            additionalInfo,
+            folderId,
+            assetGroupIds,
+            replacedSerialNumber,
+            cloudKey,
+            location,
+        )
         self.contractNumber = contractNumber
 
     def to_json(self) -> dict:

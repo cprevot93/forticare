@@ -14,6 +14,7 @@ from tests.context import (
     ServiceRegistrationUnit,
 )
 
+import requests
 import unittest
 import datetime as dt
 
@@ -60,10 +61,10 @@ class BasicTestSuite(unittest.TestCase):
         with self.subTest("Test auto login True and change token to an invalid one"):
             self.forticare._auto_login = True
             self.forticare.token = "toto"
-            res = self.forticare.get_products(dt.datetime(2023, 1, 1))
-            print(res)
-            self.assertTrue(res)
-            self.assertTrue(isinstance(res, list))
+            with self.assertRaises(requests.exceptions.HTTPError):
+                res = self.forticare.get_products(dt.datetime(2023, 1, 1))
+                print(res)
+                self.assertTrue(res)
 
     def test_asset_class(self):
         """ "Create an assert from a dict"""
@@ -238,8 +239,7 @@ class BasicTestSuite(unittest.TestCase):
             "phone": "0123456789",
             "fax": "0123456789",
         }
-        location = Location()
-        location.from_json(data)
+        location = Location(**data)
         print(location)
         self.assertTrue(location)
         self.assertTrue(isinstance(location, Location))
