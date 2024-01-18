@@ -179,7 +179,7 @@ def get_product_details(self, serial_number: str) -> Asset:
 #     ...
 #   ]
 # }
-def register_product(self, units: list[ProductRegistrationUnit], locations: list) -> bool:
+def register_product(self, units: list[ProductRegistrationUnit], locations: list = []) -> bool:
     """
     Register products.
     :param units: Registration units
@@ -196,8 +196,9 @@ def register_product(self, units: list[ProductRegistrationUnit], locations: list
                 unit["location"] = {"ref": "#/locations/" + str(index)}
     body = {
         "registrationUnits": _units_list,
-        "locations": [location[1].to_json() for location in locations],
     }
+    if len(locations) > 0:
+        body["locations"] = [location[1].to_json() for location in locations]
 
     LOG.info("> Registering new product...")
     results = None

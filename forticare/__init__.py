@@ -6,12 +6,13 @@ from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit,
 
 
 class FortiCare(object):
-    def __init__(self, api_user=None, api_key=None, auto_login=False, timeout=20):
+    def __init__(self, api_user=None, api_key=None, auto_login=False, timeout=20, debug=False):
         self._api_user = api_user
         self._api_key = api_key
         self._token = None
         self._auto_login = auto_login
         self._timeout = timeout
+        self._debug = debug
 
     from ._helpers import _post
     from ._core import login
@@ -68,6 +69,16 @@ class FortiCare(object):
     def timeout(self, timeout):
         """Set timeout"""
         self._timeout = timeout
+
+    @property
+    def debug(self):
+        """Get debug"""
+        return self._debug
+
+    @debug.setter
+    def debug(self, debug):
+        """Set debug"""
+        self._debug = debug
 
     def __str__(self):
         return f"FortiCare: logged with {self.api_user}"
