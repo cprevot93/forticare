@@ -111,6 +111,7 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
     if self.debug:
         LOG.debug(">>> POST %s\n%s", url, json.dumps(body, indent=4))
     results = requests.post(url, headers={"Authorization": f"Bearer {self.token}"}, json=body, timeout=self.timeout)
+    print(results)
     j_data = results.json()
     if results.ok:
         return j_data
@@ -121,7 +122,11 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
         and "error" in j_data
         and j_data["error"]
         and "message" in j_data["error"]
-        and j_data["error"]["message"] == "Invalid security token."
+        and (
+            j_data["error"]["message"] == "Invalid security token."
+            or j_data["error"]["message"] == "Access denied. No permission to access the requested action or resource."
+            or j_data["error"]["message"] == "Please provide token in request."
+        )
     ):
         if self._auto_login:
             if self.login():

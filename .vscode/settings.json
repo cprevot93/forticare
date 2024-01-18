@@ -1,10 +1,20 @@
 {
-  "python.testing.unittestEnabled": true,
-  "python.testing.unittestArgs": ["-v", "-s", "./tests", "-p", "test_*.py"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "tests",
+    "-n0",
+    "--cov=forticare",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=75",
+    "--no-cov-on-fail"
+  ],
+  "python.testing.unittestEnabled": false,
   "pylint.args": ["--max-line-length=120"],
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "black-formatter.args": ["--line-length=120", "--target-version=py311"],
-  "python.analysis.typeCheckingMode": "basic"
+  "python.analysis.typeCheckingMode": "basic",
+  "files.eol": "\n"
 }

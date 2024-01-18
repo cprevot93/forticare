@@ -47,7 +47,7 @@ def login(self, api_user: str = "", api_key: str = "") -> bool:
     if results.ok:
         j_data = json.loads(results.content)
         self.token = j_data["access_token"]
-    elif results.status_code == 401:
+    elif results.status_code == 400 or results.status_code == 401:
         LOG.error(">>> Invalid credentials, or user improperly configured")
         return False
     else:
@@ -58,7 +58,11 @@ def login(self, api_user: str = "", api_key: str = "") -> bool:
         except Exception:
             pass
         LOG.error(
-            f">>> Error: {error_description}\nREQUEST:\nHeaders:\n{results.request.headers}\nBody:\n{results.request.body}\nRESPONSE:\n{results.content}\n",
+            ">>> Error: %s\nREQUEST:\nHeaders:\n%s\nBody:\n%s\nRESPONSE:\n%s\n",
+            error_description,
+            results.request.headers,
+            results.request.body,
+            results.content,
         )
         results.raise_for_status()  # unknown error. Raise an exception
         return False

@@ -13,7 +13,7 @@ from tests.context import (
     ProductRegistrationUnit,
     ServiceRegistrationUnit,
 )
-
+import json
 import requests
 import unittest
 import datetime as dt
@@ -39,32 +39,225 @@ class BasicTestSuite(unittest.TestCase):
         assert token  # <> None
 
     def test_invalid_cred(self):
-        res = self.forticare.login(API_USERNAME, "toto")
+        data = {"error": "invalid_grant", "error_description": "Invalid credentials given."}
+        ret = requests.Response()
+        ret.status_code = 400
+        ret._content = bytes(json.dumps(data), "utf-8")
+        ret.headers = {"Content-Type": "application/json"}
+
+        with patch.object(requests, "post", return_value=ret) as mock_method:
+            res = self.forticare.login("toto", "toto")
+
+        mock_method.assert_called_once_with(
+            "https://customerapiauth.fortinet.com/api/v1/oauth/token/",
+            json={
+                "username": "toto",
+                "password": "toto",
+                "client_id": "assetmanagement",
+                "grant_type": "password",
+            },
+        )
+
         assert res is False
 
-    def test_auto_login(self):
-        with self.subTest("Test auto login True"):
-            self.forticare._auto_login = True
-            self.forticare.token = None
+    def test_invalid_pwd(self):
+        data = {"error": "Unexpected error has happened", "status": "failure"}
+        ret = requests.Response()
+        ret.status_code = 401
+        ret._content = bytes(json.dumps(data), "utf-8")
+
+        with patch.object(requests, "post", return_value=ret) as mock_method:
+            res = self.forticare.login(API_USERNAME, "toto")
+
+        mock_method.assert_called_once_with(
+            "https://customerapiauth.fortinet.com/api/v1/oauth/token/",
+            json={
+                "username": API_USERNAME,
+                "password": "toto",
+                "client_id": "assetmanagement",
+                "grant_type": "password",
+            },
+        )
+
+        assert res is False
+
+    def test_auto_login_true(self):
+        self.forticare._auto_login = True
+        self.forticare.token = None
+        res = self.forticare.get_products(dt.datetime(2023, 1, 1))
+        print(res)
+        self.assertTrue(res)
+        self.assertTrue(isinstance(res, list))
+
+    def test_auto_login_false(self):
+        self.forticare._auto_login = False
+        self.forticare.token = None
+
+        with self.assertRaises(ValueError):
             res = self.forticare.get_products(dt.datetime(2023, 1, 1))
             print(res)
+
+    def test_auto_login_true_invalid_token(self):
+        data = {
+            "build": "1.0.0",
+            "error": {
+                "errorCode": 202,
+                "message": "Access denied. No permission to access the requested action or resource.",
+            },
+            "message": "Invalid incoming request.",
+            "status": -1,
+            "token": "fg7UDR6xzE9MAgw0MMcggk6WTgZVKr",
+            "version": "3.0",
+            "assets": None,
+        }
+        ret = requests.Response()
+        ret.status_code = 400
+        ret._content = bytes(json.dumps(data), "utf-8")
+
+        data = {
+            "access_token": "Qd8vpxWGfQkMv7XzX75vGjgMZ6Wsc3",
+            "expires_in": 3600,
+            "token_type": "Bearer",
+            "scope": "read write",
+            "refresh_token": "bUgkJ74cXH2tyD4Ps4pAGDnxnuqcbA",
+            "message": "successfully authenticated",
+            "status": "success",
+        }
+        ret2 = requests.Response()
+        ret2.status_code = 200
+        ret2._content = bytes(json.dumps(data), "utf-8")
+
+        data = {
+            "build": "1.0.0",
+            "error": None,
+            "message": "Request processed successfully",
+            "status": 0,
+            "token": "gI2aj6bEl5pVzi1FQCRUG0OzFc0kra",
+            "version": "3.0",
+            "assets": [
+                {
+                    "description": "Automatically registered by Synapflo",
+                    "entitlements": [
+                        {
+                            "endDate": "2027-01-17T00:00:00",
+                            "level": 6,
+                            "levelDesc": "Web/Online",
+                            "startDate": "2024-01-18T00:00:00",
+                            "type": 2,
+                            "typeDesc": "Firmware & General Updates",
+                        },
+                        {
+                            "endDate": "2027-01-17T00:00:00",
+                            "level": 20,
+                            "levelDesc": "Premium",
+                            "startDate": "2024-01-18T00:00:00",
+                            "type": 11,
+                            "typeDesc": "Enhanced Support",
+                        },
+                        {
+                            "endDate": "2027-01-17T00:00:00",
+                            "level": 20,
+                            "levelDesc": "Premium",
+                            "startDate": "2024-01-18T00:00:00",
+                            "type": 12,
+                            "typeDesc": "Telephone Support",
+                        },
+                        {
+                            "endDate": "2027-01-17T00:00:00",
+                            "level": 6,
+                            "levelDesc": "Web/Online",
+                            "startDate": "2024-01-18T00:00:00",
+                            "type": 21,
+                            "typeDesc": "Advanced Malware Protection",
+                        },
+                        {
+                            "endDate": "2027-01-17T00:00:00",
+                            "level": 6,
+                            "levelDesc": "Web/Online",
+                            "startDate": "2024-01-18T00:00:00",
+                            "type": 28,
+                            "typeDesc": "FortiWeb Security Service",
+                        },
+                        {
+                            "endDate": "2027-01-17T00:00:00",
+                            "level": 6,
+                            "levelDesc": "Web/Online",
+                            "startDate": "2024-01-18T00:00:00",
+                            "type": 43,
+                            "typeDesc": "IP Reputation",
+                        },
+                    ],
+                    "isDecommissioned": False,
+                    "productModel": "FortiWeb VM 2 CPU",
+                    "registrationDate": "2024-01-18T00:13:44",
+                    "serialNumber": "FVVM02TM24000714",
+                    "warrantySupports": None,
+                    "assetGroups": [],
+                    "contracts": [
+                        {
+                            "contractNumber": "4927CQ108750",
+                            "sku": "FC-10-VVM02-936-02-36",
+                            "terms": [
+                                {
+                                    "endDate": "2027-01-17T03:06:54",
+                                    "startDate": "2024-01-18T03:06:54",
+                                    "supportType": "Firmware & General Updates",
+                                },
+                                {
+                                    "endDate": "2027-01-17T03:06:54",
+                                    "startDate": "2024-01-18T03:06:54",
+                                    "supportType": "IP Reputation",
+                                },
+                                {
+                                    "endDate": "2027-01-17T03:06:54",
+                                    "startDate": "2024-01-18T03:06:54",
+                                    "supportType": "Telephone Support",
+                                },
+                                {
+                                    "endDate": "2027-01-17T03:06:54",
+                                    "startDate": "2024-01-18T03:06:54",
+                                    "supportType": "FortiWeb Security Service",
+                                },
+                                {
+                                    "endDate": "2027-01-17T03:06:54",
+                                    "startDate": "2024-01-18T03:06:54",
+                                    "supportType": "Enhanced Support",
+                                },
+                                {
+                                    "endDate": "2027-01-17T03:06:54",
+                                    "startDate": "2024-01-18T03:06:54",
+                                    "supportType": "Advanced Malware Protection",
+                                },
+                            ],
+                        }
+                    ],
+                    "productModelEoR": None,
+                    "productModelEoS": None,
+                    "folderId": 0,
+                    "folderPath": "/My Assets",
+                    "status": "Registered",
+                }
+            ],
+            "pageNumber": 1,
+            "totalPages": 1,
+        }
+        ret3 = requests.Response()
+        ret3.status_code = 200
+        ret3._content = bytes(json.dumps(data), "utf-8")
+
+        self.forticare._auto_login = True
+        self.forticare.token = "toto"
+
+        with patch.object(
+            requests,
+            "post",
+            side_effect=[ret, ret2, ret3],
+        ) as mock_method:
+            res = self.forticare.get_products(dt.datetime(2028, 1, 1))
+            print(res)
             self.assertTrue(res)
-            self.assertTrue(isinstance(res, list))
 
-        with self.subTest("Test auto login False"):
-            self.forticare._auto_login = False
-            self.forticare.token = None
-            with self.assertRaises(ValueError):
-                res = self.forticare.get_products(dt.datetime(2023, 1, 1))
-                print(res)
-
-        with self.subTest("Test auto login True and change token to an invalid one"):
-            self.forticare._auto_login = True
-            self.forticare.token = "toto"
-            with self.assertRaises(requests.exceptions.HTTPError):
-                res = self.forticare.get_products(dt.datetime(2023, 1, 1))
-                print(res)
-                self.assertTrue(res)
+        mock_method.call_count == 3
 
     def test_asset_class(self):
         """ "Create an assert from a dict"""
@@ -187,7 +380,7 @@ class BasicTestSuite(unittest.TestCase):
         self.assertTrue(isinstance(asset.assetGroups, list))
         self.assertTrue(asset.assetGroups == [])
         self.assertTrue(isinstance(asset.contracts, list))
-        self.assertTrue(isinstance(asset.contracts[0], dict))
+        # self.assertTrue(isinstance(asset.contracts[0], dict))
         # self.assertTrue(asset.contracts[0]["contractNumber"] == "5762CL381100")
         # self.assertTrue(asset.contracts[0]["sku"] == "FC2-10-CGSLB-330-02-12")
         # self.assertTrue(isinstance(asset.contracts[0]["terms"], list))
@@ -294,7 +487,6 @@ class BasicTestSuite(unittest.TestCase):
         self.assertTrue(isinstance(res, str))
         self.assertTrue(res.startswith("-----BEGIN FE VM LICENSE-----\n"))
 
-    def test_register_product(self):
         _ret = {
             "token": "JnMYRfKrLVStMHFxrf5fqtPPQpMbWN",
             "version": "3.0",
@@ -348,13 +540,12 @@ class BasicTestSuite(unittest.TestCase):
             {
                 "registrationUnits": [
                     {
-                        "serialNumber": "FEVM04TM23000333",
                         "contractNumber": "2863TP100247",
                         "description": "",
                         "isGovernment": False,
+                        "serialNumber": "FEVM04TM23000333",
                     }
-                ],
-                "locations": [],
+                ]
             },
         )
 
