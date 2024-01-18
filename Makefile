@@ -1,5 +1,5 @@
 init:
 	pip install -r requirements.txt
 
-test:
-	pytest tests
+tests:
+	pytest tests --cov=forticare --cov-report=term-missing --cov-report=html --cov-fail-under=75 --no-cov-on-fail

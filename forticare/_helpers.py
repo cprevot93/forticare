@@ -117,6 +117,7 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
         (results.status_code == 400 or results.status_code == 401 or results.status_code == 403)
         and j_data
         and "error" in j_data
+        and j_data["error"]
         and "message" in j_data["error"]
         and j_data["error"]["message"] == "Invalid security token."
     ):
