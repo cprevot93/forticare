@@ -10,7 +10,7 @@ with open("LICENSE") as f:
 
 setup(
     name="forticare",
-    version="0.2.0",
+    version="0.2.1",
     description="Fortinet FortiCare Python SDK",
     long_description=readme,
     author="Charles Prevot",

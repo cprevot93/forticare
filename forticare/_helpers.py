@@ -108,8 +108,6 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
         else:
             raise ValueError("Token is missing. Please login first.")
     j_data = None
-    if self.debug:
-        LOG.debug(">>> POST %s\n%s", url, json.dumps(body, indent=4))
     results = requests.post(url, headers={"Authorization": f"Bearer {self.token}"}, json=body, timeout=self.timeout)
     print(results)
     j_data = results.json()
@@ -134,13 +132,12 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
         else:
             raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['error']['message']}")
     else:
-        if self.debug:
-            LOG.debug(
-                ">>> Error:\nREQUEST:\n%s\n%s\nRESPONSE:\n%s\n",
-                str(results.request.headers),
-                str(results.request.body),
-                str(results.content),
-            )
+        LOG.debug(
+            ">>> Error:\nREQUEST:\n%s\n%s\nRESPONSE:\n%s\n",
+            str(results.request.headers),
+            str(results.request.body),
+            str(results.content),
+        )
         if j_data and "error" in j_data and "message" in j_data["error"]:
             raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['error']['message']}")
         elif j_data and "message" in j_data:
