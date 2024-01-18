@@ -13,7 +13,7 @@ from .registration_unit import LicenseRegistrationUnit
 __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
 
-LOG = logging.getLogger()
+LOG = logging.getLogger("forticare")
 
 
 # {

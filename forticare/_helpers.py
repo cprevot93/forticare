@@ -11,7 +11,7 @@ from logging.handlers import RotatingFileHandler
 __author__ = "Charles Prevot"
 __copyright__ = "Copyright 2023"
 
-LOG = logging.getLogger()
+LOG = logging.getLogger("forticare")
 
 
 def check_python_version():

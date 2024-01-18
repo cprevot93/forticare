@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2023"
 
 
 FC_OAUTH = "https://customerapiauth.fortinet.com/api/v1/oauth/token/"  # used for login only
-LOG = logging.getLogger()
+LOG = logging.getLogger("forticare")
 
 
 def login(self, api_user: str = "", api_key: str = "") -> bool:
