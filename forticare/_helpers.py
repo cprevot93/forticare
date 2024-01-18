@@ -124,7 +124,7 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
             if self.login():
                 return self._post(endpoint, body)
         else:
-            raise requests.exceptions.HTTPError("POST", endpoint, results.status_code, j_data["error"]["message"])
+            raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['error']['message']}")
     else:
         LOG.debug(
             ">>> Error:\nREQUEST:\n%s\n%s\nRESPONSE:\n%s\n",
@@ -133,9 +133,9 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
             str(results.content),
         )
         if j_data and "error" in j_data and "message" in j_data["error"]:
-            raise requests.exceptions.HTTPError("POST", endpoint, results.status_code, j_data["error"]["message"])
+            raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['error']['message']}")
         elif j_data and "message" in j_data:
-            raise requests.exceptions.HTTPError("POST", endpoint, results.status_code, j_data["message"])
+            raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['message']}")
         else:
             results.raise_for_status()  # unknown error. Raise an exception
     return j_data
