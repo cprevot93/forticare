@@ -1,4 +1,4 @@
-# FortiCare python SDK
+# Unofficial FortiCare v3 Python SDK
 
 ## Prerequisites
 
@@ -23,13 +23,13 @@ API_USERNAME="<your_username>" # or os.environ.get('API_USERNAME')
 API_PASSWORD="<your_password>" # or os.environ.get('API_PASSWORD')
 
 ff = FortiCare(API_USERNAME, API_PASSWORD, auto_login=False, timeout=20, debug=False)
-ff.login() # optional is auto_login is set to True
+ff.login() # optional if auto_login is set to True
 ff.get_products()
 ```
 
 ## Features
 
-- Auto login: login automatically when the token is None or expired
+- Auto login: login automatically when the token is empty or expired
 - Debug: print the request and response with logging module and logger name `forticare`
 - All FortiCare API endpoints are available
 - Python objects for easy manipulation: [Asset](https://github.com/cprevot93/forticare/blob/28a090c1945ba7eff9604b65cc8d7acd8a8c2601/forticare/asset.py#L194C7-L194C12), Contract, Product, Service, License, etc.
