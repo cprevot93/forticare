@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+FortiCare API wrapper for Python
+"""
 
 from .asset import Asset, Service, License
 from .location import Location
@@ -6,6 +9,10 @@ from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit,
 
 
 class FortiCare(object):
+    """
+    FortiCare API wrapper
+    """
+
     def __init__(self, api_user=None, api_key=None, auto_login=False, timeout=20, debug=False):
         self._api_user = api_user
         self._api_key = api_key

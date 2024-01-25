@@ -3,7 +3,7 @@
 """location.py: Objects used in FortiCare API"""
 
 __author__ = "Charles Prevot"
-__copyright__ = "Copyright 2023"
+__copyright__ = "Copyright 2024"
 
 
 # {

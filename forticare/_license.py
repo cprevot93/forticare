@@ -11,7 +11,7 @@ from .asset import Asset, Service, License
 from .registration_unit import LicenseRegistrationUnit
 
 __author__ = "Charles Prevot"
-__copyright__ = "Copyright 2023"
+__copyright__ = "Copyright 2024"
 
 LOG = logging.getLogger("forticare")
 

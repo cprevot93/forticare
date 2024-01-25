@@ -9,7 +9,7 @@ from ._constants import *
 from logging.handlers import RotatingFileHandler
 
 __author__ = "Charles Prevot"
-__copyright__ = "Copyright 2023"
+__copyright__ = "Copyright 2024"
 
 LOG = logging.getLogger("forticare")
 

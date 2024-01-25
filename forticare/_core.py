@@ -8,7 +8,7 @@ import json
 from typing import Union
 
 __author__ = "Charles Prevot"
-__copyright__ = "Copyright 2023"
+__copyright__ = "Copyright 2024"
 
 
 FC_OAUTH = "https://customerapiauth.fortinet.com/api/v1/oauth/token/"  # used for login only

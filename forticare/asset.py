@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Union
 
 __author__ = "Charles Prevot"
-__copyright__ = "Copyright 2023"
+__copyright__ = "Copyright 2024"
 
 
 def parse_datetime(date: str) -> datetime:
