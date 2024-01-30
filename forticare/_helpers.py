@@ -107,7 +107,7 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
             self.login()
         else:
             raise ValueError("Token is missing. Please login first.")
-    j_data = None
+    j_data = {}
     results = requests.post(url, headers={"Authorization": f"Bearer {self.token}"}, json=body, timeout=self.timeout)
     print(results)
     j_data = results.json()

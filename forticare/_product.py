@@ -12,7 +12,7 @@ from .asset import Asset, Service
 from .location import Location
 
 __author__ = "Charles Prevot"
-__copyright__ = "Copyright 2023"
+__copyright__ = "Copyright 2024"
 
 LOG = logging.getLogger("forticare")
 
@@ -44,16 +44,17 @@ def get_products(
         body["productModel"] = str(product_model)
 
     LOG.info("> Retriving assets list...")
-    results = None
+    results = {}
     try:
         results = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to retrive assets: %s", str(exp.args))
         raise exp
 
-    if "assets" in results:
+    if isinstance(results, dict) and "assets" in results:
         return [Asset(asset) for asset in results["assets"]]
-    return []
+    else:
+        raise Exception("Inexpected response from API:/n%s", results)
 
 
 def get_product_details(self, serial_number: str) -> Asset:
@@ -67,9 +68,9 @@ def get_product_details(self, serial_number: str) -> Asset:
     body = {"serialNumber": str(serial_number)}
 
     LOG.info("> Retriving asset details...")
-    results = None
+    results = {}
     try:
-        results = self._post(endpoint, body)
+        results: dict = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to retrive asset details: %s", str(exp.args))
         raise exp
@@ -201,14 +202,18 @@ def register_product(self, units: list[ProductRegistrationUnit], locations: list
         body["locations"] = [location[1].to_json() for location in locations]
 
     LOG.info("> Registering new product...")
-    results = None
+    results = {}
     try:
-        results = self._post(endpoint, body)
+        results: dict = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to register product: %s", str(exp.args))
         raise exp
 
-    asset_list = [Asset(asset) for asset in results["assets"]]
+    asset_list = []
+    if isinstance(results, dict) and "assets" in results:
+        asset_list = [Asset(asset) for asset in results["assets"]]
+    else:
+        raise Exception("Inexpected response from API:/n%s", results)
     for asset in asset_list:
         if asset.status == "Registered":
             for unit in units:

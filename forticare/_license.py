@@ -42,14 +42,16 @@ def get_licenses(self, status: str = "", license_number: str = "", license_sku: 
         body["licenseSKU"] = str(license_sku)
 
     LOG.info("> Getting license information...")
-    results = None
+    results = {}
     try:
-        results = self._post(endpoint, body)
+        results: dict = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to get license information: %s", str(exp.args))
         raise exp
 
-    return [License(_l) for _l in results["licenses"]]
+    if isinstance(results, dict) and "licenses" in results:
+        return [License(_l) for _l in results["licenses"]]
+    raise Exception("Inexpected response from API:/n%s", results)
 
 
 # Request body example:
@@ -70,14 +72,16 @@ def register_licenses(self, license: LicenseRegistrationUnit) -> Asset:
     body = license.to_json()
 
     LOG.info("> Registering new service...")
-    results = None
+    results = {}
     try:
-        results = self._post(endpoint, body)
+        results: dict = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to register service: %s", str(exp.args))
         raise exp
 
-    return Asset(results["assetDetails"])
+    if isinstance(results, dict) and "assetDetails" in results:
+        return Asset(results["assetDetails"])
+    raise Exception("Inexpected response from API:/n%s", results)
 
 
 def download_licenses(self, serial_number: str) -> str:
@@ -91,11 +95,13 @@ def download_licenses(self, serial_number: str) -> str:
     body = {"serialNumber": str(serial_number)}
 
     LOG.info("> Downloading license file...")
-    results = None
+    results = {}
     try:
-        results = self._post(endpoint, body)
+        results: dict = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to download license file: %s", str(exp.args))
         raise exp
 
-    return results["licenseFile"]
+    if isinstance(results, dict) and "licenseFile" in results:
+        return results["licenseFile"]
+    raise Exception("Inexpected response from API:/n%s", results)

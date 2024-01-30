@@ -34,11 +34,13 @@ def register_services(self, service: ServiceRegistrationUnit) -> Asset:
     body = service.to_json()
 
     LOG.info("> Registering new service...")
-    results = None
+    results = {}
     try:
-        results = self._post(endpoint, body)
+        results: dict = self._post(endpoint, body)
     except Exception as exp:
         LOG.error(">>> Failed to register service: %s", str(exp.args))
         raise exp
 
-    return Asset(results["assetDetails"])
+    if isinstance(results, dict) and "assetDetails" in results:
+        return Asset(results["assetDetails"])
+    raise Exception("Inexpected response from API:/n%s", results)

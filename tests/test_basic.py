@@ -608,6 +608,42 @@ class BasicTestSuite(unittest.TestCase):
             },
         )
 
+    def test_register_service_bad_value_return(self):
+        """
+        API returns None (inexpected).
+        """
+        with patch.object(FortiCare, "_post", return_value=None) as mock_method:
+            service = ServiceRegistrationUnit(contractNumber="2863TP100247", description="", isGovernment=False)
+            with self.assertRaises(Exception):
+                self.forticare.register_services(service)
+
+        mock_method.assert_called_once_with(
+            "/services/register",
+            {
+                "contractNumber": "2863TP100247",
+                "description": "",
+                "isGovernment": False,
+            },
+        )
+
+    def test_register_service_bad_value_return_2(self):
+        """
+        API returns None (inexpected).
+        """
+        with patch.object(FortiCare, "_post", return_value={}) as mock_method:
+            service = ServiceRegistrationUnit(contractNumber="2863TP100247", description="", isGovernment=False)
+            with self.assertRaises(Exception):
+                self.forticare.register_services(service)
+
+        mock_method.assert_called_once_with(
+            "/services/register",
+            {
+                "contractNumber": "2863TP100247",
+                "description": "",
+                "isGovernment": False,
+            },
+        )
+
     def test_register_license(self):
         _ret = {
             "token": "JnMYRfKrLVStMHFxrf5fqtPPQpMbWN",
