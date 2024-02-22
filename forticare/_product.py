@@ -202,6 +202,7 @@ def register_product(self, units: list[ProductRegistrationUnit], locations: list
     if len(locations) > 0:
         body["locations"] = [location[1].to_json() for location in locations]
 
+    print(json.dumps(body, indent=4))
     LOG.info("> Registering new product...")
     results = {}
     try:

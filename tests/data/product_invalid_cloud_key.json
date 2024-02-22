@@ -1,0 +1,12 @@
+{
+  "build": "1.0.0",
+  "error": {
+    "errorCode": 102,
+    "message": "Invalid cloud key provided for registration units[0]. "
+  },
+  "message": "Invalid incoming request.",
+  "status": -1,
+  "token": "XQ4qlcU8MGVpjuZKJYGSk4RXQFFrFf",
+  "version": "3.0",
+  "assets": null
+}

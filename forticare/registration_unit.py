@@ -128,8 +128,8 @@ class ProductRegistrationUnit(RegistrationUnit):
 
     def __init__(
         self,
-        contractNumber: str,
         serialNumber: str,
+        contractNumber: str = "",
         description: str = "",
         isGovernment: bool = False,
         additionalInfo: str = "",

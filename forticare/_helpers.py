@@ -135,11 +135,19 @@ def _post(self, endpoint: str, body: dict = {}) -> dict:
         LOG.debug(
             ">>> Error:\nREQUEST:\n%s\n%s\nRESPONSE:\n%s\n",
             str(results.request.headers),
-            str(results.request.body),
+            str(results.request.body if hasattr(results.request, "body") else ""),
             str(results.content),
         )
         if j_data and "error" in j_data and "message" in j_data["error"]:
-            raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['error']['message']}")
+            _msg = f"POST {endpoint} "
+            if j_data["error"]["message"] == "Failed":
+                for index, asset in enumerate(j_data["assets"]):
+                    _msg += f"{asset['serialNumber']} | {asset['message']}"
+                    if index < len(j_data["assets"]) - 1:
+                        _msg += ", "
+            else:
+                _msg += j_data["error"]["message"]
+            raise requests.exceptions.HTTPError(results.status_code, _msg)
         elif j_data and "message" in j_data:
             raise requests.exceptions.HTTPError(results.status_code, f"POST {endpoint} {j_data['message']}")
         else:

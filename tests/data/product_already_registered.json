@@ -1,0 +1,32 @@
+{
+  "build": "1.0.0",
+  "error": { "errorCode": 301, "message": "Failed" },
+  "message": "Failed",
+  "status": 2,
+  "token": "S4vAmY3nrlYPUaa6VK8KNR206skfBR",
+  "version": "3.0",
+  "assets": [
+    {
+      "description": null,
+      "entitlements": null,
+      "isDecommissioned": false,
+      "productModel": null,
+      "registrationDate": null,
+      "serialNumber": "FG40FTK190001XXX",
+      "warrantySupports": null,
+      "assetGroups": null,
+      "contracts": null,
+      "productModelEoR": null,
+      "productModelEoS": null,
+      "additionalInfo": null,
+      "contractNumber": null,
+      "contractTerms": null,
+      "location": null,
+      "message": "Product-> Product already registered, but no contract associated with request. Please check again.",
+      "sku": null,
+      "status": 2,
+      "folderId": 0,
+      "folderPath": null
+    }
+  ]
+}

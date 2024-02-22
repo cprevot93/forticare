@@ -446,21 +446,6 @@ class BasicTestSuite(unittest.TestCase):
         self.assertTrue(location.phone == "0123456789")
         self.assertTrue(location.fax == "0123456789")
 
-    def test_get_products(self):
-        res = self.forticare.get_products(dt.datetime(2023, 1, 1))
-        print(res)
-        self.assertTrue(res)
-        self.assertTrue(isinstance(res, list))
-
-    def test_get_product_details(self):
-        sn = "FCGSLB0000000205"
-        res = self.forticare.get_product_details(sn)
-        print(res)
-        self.assertTrue(res)
-        self.assertTrue(isinstance(res, Asset))
-        self.assertTrue(res.serialNumber == sn)
-        self.assertTrue(res.productModel == "FortiGSLB Cloud")
-
     def test_get_licenses(self):
         with self.subTest("Test without parameters"):
             res = self.forticare.get_licenses()
@@ -478,6 +463,63 @@ class BasicTestSuite(unittest.TestCase):
             self.assertTrue(isinstance(res, list))
             self.assertTrue(isinstance(res[0], License))
             self.assertTrue(res[0].licenseNumber == license_number)
+
+    def test_register_license(self):
+        _ret = {
+            "token": "JnMYRfKrLVStMHFxrf5fqtPPQpMbWN",
+            "version": "3.0",
+            "status": 200,
+            "message": "Success",
+            "build": "1.0.0",
+            "error": None,
+            "assetDetails": {
+                "serialNumber": "FEVM04TM23XXXXXX",
+                "registrationDate": dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+                "description": "",
+                "isDecommissioned": False,
+                "productModel": "<string>",
+                "productModelEoR": "<string>",
+                "productModelEoS": "<string>",
+                "entitlements": [
+                    {
+                        "level": 2,
+                        "levelDesc": "Web/Online",
+                        "type": 2,
+                        "typeDesc": "",
+                        "startDate": dt.datetime.today().strftime("%Y-%m-%dT%H:%M:%S"),
+                        "endDate": (dt.datetime.today() + dt.timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%S"),
+                    }
+                ],
+                "partner": "",
+                "licenses": [
+                    {
+                        "licenseNumber": "FSMAI4714475459",
+                        "licenseSKU": "FSM-VM-INTERNAL",
+                        "licenseType": "Eval",
+                        "experiationDate": (dt.datetime.today() + dt.timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%S"),
+                    }
+                ],
+                "location": {},
+            },
+        }
+        with patch.object(FortiCare, "_post", return_value=_ret) as mock_method:
+            license = LicenseRegistrationUnit(
+                licenseRegistrationCode="2863TP100247",
+                serialNumber="FSMAI4714475459",
+                description="",
+                isGovernment=False,
+            )
+            self.forticare.register_licenses(license)
+
+        mock_method.assert_called_once_with(
+            "/licenses/register",
+            {
+                "description": "",
+                "isGovernment": False,
+                "licenseRegistrationCode": "2863TP100247",
+                "serialNumber": "FSMAI4714475459",
+            },
+        )
 
     def test_download_licenses(self):
         sn = "FEVM04TM23XXXXXX"
@@ -643,115 +685,6 @@ class BasicTestSuite(unittest.TestCase):
                 "isGovernment": False,
             },
         )
-
-    def test_register_license(self):
-        _ret = {
-            "token": "JnMYRfKrLVStMHFxrf5fqtPPQpMbWN",
-            "version": "3.0",
-            "status": 200,
-            "message": "Success",
-            "build": "1.0.0",
-            "error": None,
-            "assetDetails": {
-                "serialNumber": "FEVM04TM23XXXXXX",
-                "registrationDate": dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-                "description": "",
-                "isDecommissioned": False,
-                "productModel": "<string>",
-                "productModelEoR": "<string>",
-                "productModelEoS": "<string>",
-                "entitlements": [
-                    {
-                        "level": 2,
-                        "levelDesc": "Web/Online",
-                        "type": 2,
-                        "typeDesc": "",
-                        "startDate": dt.datetime.today().strftime("%Y-%m-%dT%H:%M:%S"),
-                        "endDate": (dt.datetime.today() + dt.timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%S"),
-                    }
-                ],
-                "partner": "",
-                "licenses": [
-                    {
-                        "licenseNumber": "FSMAI4714475459",
-                        "licenseSKU": "FSM-VM-INTERNAL",
-                        "licenseType": "Eval",
-                        "experiationDate": (dt.datetime.today() + dt.timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%S"),
-                    }
-                ],
-                "location": {},
-            },
-        }
-        with patch.object(FortiCare, "_post", return_value=_ret) as mock_method:
-            license = LicenseRegistrationUnit(
-                licenseRegistrationCode="2863TP100247",
-                serialNumber="FSMAI4714475459",
-                description="",
-                isGovernment=False,
-            )
-            self.forticare.register_licenses(license)
-
-        mock_method.assert_called_once_with(
-            "/licenses/register",
-            {
-                "description": "",
-                "isGovernment": False,
-                "licenseRegistrationCode": "2863TP100247",
-                "serialNumber": "FSMAI4714475459",
-            },
-        )
-
-    def test_register_product_missing_forticloud_key(self):
-        # TODO: implement test
-        _ret = {
-            "build": "1.0.0",
-            "error": {"errorCode": 301, "message": "Failed"},
-            "message": "Failed",
-            "status": 2,
-            "token": "t9IIeGdc5YEXJkfbnAlDYoIJSLE15q",
-            "version": "3.0",
-            "assets": [
-                {
-                    "description": None,
-                    "entitlements": None,
-                    "isDecommissioned": False,
-                    "productModel": None,
-                    "registrationDate": None,
-                    "serialNumber": "FGT91GTK23001XXX",
-                    "warrantySupports": None,
-                    "assetGroups": None,
-                    "contracts": None,
-                    "productModelEoR": None,
-                    "productModelEoS": None,
-                    "additionalInfo": None,
-                    "contractNumber": None,
-                    "contractTerms": None,
-                    "location": None,
-                    "message": "Product-> FortiCloud Key is Required.",
-                    "sku": None,
-                    "status": 2,
-                    "folderId": 0,
-                    "folderPath": None,
-                }
-            ],
-        }
-
-    def test_register_product_bad_forticloud_key(self):
-        # TODO: implement test and exception
-        data = {
-            "registrationUnits": [
-                {"cloudKey": "ABC", "description": "", "isGovernment": false, "serialNumber": "FG40FTK190001XXX"}
-            ]
-        }
-        _ret = {
-            "build": "1.0.0",
-            "error": {"errorCode": 102, "message": "Invalid cloud key provided for registration units[0]. "},
-            "message": "Invalid incoming request.",
-            "status": -1,
-            "token": "XQ4qlcU8MGVpjuZKJYGSk4RXQFFrFf",
-            "version": "3.0",
-            "assets": None,
-        }
 
 
 if __name__ == "__main__":

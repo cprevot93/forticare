@@ -1,0 +1,32 @@
+{
+  "build": "1.0.0",
+  "error": { "errorCode": 301, "message": "Failed" },
+  "message": "Failed",
+  "status": 2,
+  "token": "t9IIeGdc5YEXJkfbnAlDYoIJSLE15q",
+  "version": "3.0",
+  "assets": [
+    {
+      "description": null,
+      "entitlements": null,
+      "isDecommissioned": false,
+      "productModel": null,
+      "registrationDate": null,
+      "serialNumber": "FG40FTK190001XXX",
+      "warrantySupports": null,
+      "assetGroups": null,
+      "contracts": null,
+      "productModelEoR": null,
+      "productModelEoS": null,
+      "additionalInfo": null,
+      "contractNumber": null,
+      "contractTerms": null,
+      "location": null,
+      "message": "Product-> FortiCloud Key is Required.",
+      "sku": null,
+      "status": 2,
+      "folderId": 0,
+      "folderPath": null
+    }
+  ]
+}
