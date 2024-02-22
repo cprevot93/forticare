@@ -480,7 +480,7 @@ class BasicTestSuite(unittest.TestCase):
             self.assertTrue(res[0].licenseNumber == license_number)
 
     def test_download_licenses(self):
-        sn = "FEVM04TM23000333"
+        sn = "FEVM04TM23XXXXXX"
         res = self.forticare.download_licenses(sn)
         print(res)
         self.assertTrue(res)
@@ -496,7 +496,7 @@ class BasicTestSuite(unittest.TestCase):
             "error": None,
             "assets": [
                 {
-                    "serialNumber": "FEVM04TM23000333",
+                    "serialNumber": "FEVM04TM23XXXXXX",
                     "folderId": 1,
                     "folderPath": "<string>",
                     "registrationDate": dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
@@ -531,7 +531,7 @@ class BasicTestSuite(unittest.TestCase):
         }
         with patch.object(FortiCare, "_post", return_value=_ret) as mock_method:
             unit = ProductRegistrationUnit(
-                serialNumber="FEVM04TM23000333", contractNumber="2863TP100247", description="", isGovernment=False
+                serialNumber="FEVM04TM23XXXXXX", contractNumber="2863TP100247", description="", isGovernment=False
             )
             self.forticare.register_product([unit], [])
 
@@ -543,7 +543,7 @@ class BasicTestSuite(unittest.TestCase):
                         "contractNumber": "2863TP100247",
                         "description": "",
                         "isGovernment": False,
-                        "serialNumber": "FEVM04TM23000333",
+                        "serialNumber": "FEVM04TM23XXXXXX",
                     }
                 ]
             },
@@ -558,7 +558,7 @@ class BasicTestSuite(unittest.TestCase):
             "build": "1.0.0",
             "error": None,
             "assetDetails": {
-                "serialNumber": "FEVM04TM23000333",
+                "serialNumber": "FEVM04TM23XXXXXX",
                 "registrationDate": dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
                 "description": "",
                 "isDecommissioned": False,
@@ -653,7 +653,7 @@ class BasicTestSuite(unittest.TestCase):
             "build": "1.0.0",
             "error": None,
             "assetDetails": {
-                "serialNumber": "FEVM04TM23000333",
+                "serialNumber": "FEVM04TM23XXXXXX",
                 "registrationDate": dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
                 "description": "",
                 "isDecommissioned": False,
@@ -700,6 +700,58 @@ class BasicTestSuite(unittest.TestCase):
                 "serialNumber": "FSMAI4714475459",
             },
         )
+
+    def test_register_product_missing_forticloud_key(self):
+        # TODO: implement test
+        _ret = {
+            "build": "1.0.0",
+            "error": {"errorCode": 301, "message": "Failed"},
+            "message": "Failed",
+            "status": 2,
+            "token": "t9IIeGdc5YEXJkfbnAlDYoIJSLE15q",
+            "version": "3.0",
+            "assets": [
+                {
+                    "description": None,
+                    "entitlements": None,
+                    "isDecommissioned": False,
+                    "productModel": None,
+                    "registrationDate": None,
+                    "serialNumber": "FGT91GTK23001XXX",
+                    "warrantySupports": None,
+                    "assetGroups": None,
+                    "contracts": None,
+                    "productModelEoR": None,
+                    "productModelEoS": None,
+                    "additionalInfo": None,
+                    "contractNumber": None,
+                    "contractTerms": None,
+                    "location": None,
+                    "message": "Product-> FortiCloud Key is Required.",
+                    "sku": None,
+                    "status": 2,
+                    "folderId": 0,
+                    "folderPath": None,
+                }
+            ],
+        }
+
+    def test_register_product_bad_forticloud_key(self):
+        # TODO: implement test and exception
+        data = {
+            "registrationUnits": [
+                {"cloudKey": "ABC", "description": "", "isGovernment": false, "serialNumber": "FG40FTK190001XXX"}
+            ]
+        }
+        _ret = {
+            "build": "1.0.0",
+            "error": {"errorCode": 102, "message": "Invalid cloud key provided for registration units[0]. "},
+            "message": "Invalid incoming request.",
+            "status": -1,
+            "token": "XQ4qlcU8MGVpjuZKJYGSk4RXQFFrFf",
+            "version": "3.0",
+            "assets": None,
+        }
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ from ._helpers import *
 import logging
 import json
 from datetime import datetime
+from typing import List, Tuple
 
 from .registration_unit import LicenseRegistrationUnit, ProductRegistrationUnit, ServiceRegistrationUnit
 from .asset import Asset, Service
@@ -180,19 +181,19 @@ def get_product_details(self, serial_number: str) -> Asset:
 #     ...
 #   ]
 # }
-def register_product(self, units: list[ProductRegistrationUnit], locations: list = []) -> bool:
+def register_product(self, units: list[ProductRegistrationUnit], locations: list[Tuple[str, Location]] = []) -> bool:
     """
     Register products.
     :param units: Registration units
     :type units: list[ProductRegistrationUnit]
     :param locations: Locations
-    :type locations: list[Pair[serial_number: <string>, location: <Location>]]
+    :type locations: list[Tuple[serial_number: <string>, location: <Location>]]
     :return list[Asset]: Return a list of register assets
     """
     endpoint = "/products/register"
     _units_list = [ProductRegistrationUnit.to_json(unit) for unit in units]
     for unit in _units_list:
-        for index, location in locations:
+        for index, location in enumerate(locations):
             if unit["serialNumber"] == location[0]:
                 unit["location"] = {"ref": "#/locations/" + str(index)}
     body = {
